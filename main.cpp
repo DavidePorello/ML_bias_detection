@@ -1,6 +1,12 @@
 #include <iostream>
+#include <memory>
+#include "dataset/Dataset.h"
+
+using namespace std;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    Dataset d;
+
     return 0;
 }
