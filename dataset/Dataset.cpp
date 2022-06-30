@@ -1,11 +1,12 @@
 #include "Dataset.h"
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
 Dataset::Dataset() {
-    this->raw_dataset = LoadFile("dataset/test.txt"); // TODO remember to handel ebttere the unique pointer
+    this->raw_dataset = LoadFile("dataset/census-income.test"); // TODO also add records from train file
 }
 
 vector<RawDataRecord> Dataset::LoadFile(const char *path) {
@@ -17,12 +18,17 @@ vector<RawDataRecord> Dataset::LoadFile(const char *path) {
         cout << "Could not open file " << path << endl;
         exit(-1);
     }
-    while(getline(file, line)){
+    while (getline(file, line)) {
         RawDataRecord r(line);
-        dataset.emplace_back(r);
-        cout << r.raw_data[0] << " " << r.raw_data[1] << " " << r.raw_data[2]<< endl;
+        if (!r.is_prunable())
+            dataset.emplace_back(r);
     }
     file.close();
     return dataset;
 }
+
+int Dataset::getLength() {
+    return raw_dataset.size();
+}
+
 

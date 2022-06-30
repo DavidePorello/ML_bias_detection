@@ -10,6 +10,7 @@ class RawDataRecord {
 public:
     vector<string> raw_data; // TODO make private
     explicit RawDataRecord(const string& line);
+    bool is_prunable();
 };
 
 

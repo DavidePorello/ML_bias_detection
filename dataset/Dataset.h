@@ -13,6 +13,7 @@ private:
     vector<RawDataRecord> LoadFile(const char *path);
 public:
     Dataset();
+    int getLength();
 };
 
 
