@@ -4,9 +4,9 @@
 
 // Includes all relevant components of mlpack.
 #include <armadillo>
-#include <iostream>
+#include <mlpack/methods/linear_regression/linear_regression.hpp>
 // Convenience.
-//using namespace mlpack;
+using namespace mlpack::regression;
 using namespace arma;
 int main()
 {
@@ -42,3 +42,20 @@ double kl_divergence(const vec& p, const vec& q) {
     return kl;
 }
 
+/** A wrapper for mlpack logistic regression train and predict functions.
+ *  It returns an arma::vec array of predicted values.
+ *  @param train is the training dataset
+ *  @param responses is the known value (one for each entry of the dataset)
+ *  @param samples is the dataset we want to evaluate
+*/
+vec lr_train_and_predict(const mat& train, const vec& responses, const mat& samples) {
+    // generate the model
+    LinearRegression lr(train, responses);
+    // get the parameters of such model
+    vec parameters = lr.Parameters();
+    // this will store the predictions, one row for each sample
+    rowvec predictions;
+    // predict the values
+    lr.Predict(samples, predictions);
+    return predictions;
+}
