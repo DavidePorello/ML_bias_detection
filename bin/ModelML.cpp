@@ -2,7 +2,7 @@
 
 using namespace Eigen;
 
-VectorXf ModelML::getParams() const {
+[[nodiscard]] VectorXf ModelML::getParams() const {
     return _params;
 }
 

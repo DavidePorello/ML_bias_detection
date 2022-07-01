@@ -7,7 +7,7 @@
 
 class ModelML {
     public:
-        Eigen::VectorXf getParams() const;
+        [[nodiscard]] Eigen::VectorXf getParams() const;
         void setParams(const Eigen::VectorXf &params);
         /** This function is used to train a model.
         *  @param train is a matrix having a row for each sample and a column for each feature

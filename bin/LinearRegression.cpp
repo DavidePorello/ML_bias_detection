@@ -16,6 +16,7 @@ void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
   *  @param predictions is a column vector which WILL store the computed responses, one for each sample
  * */
 void LinearRegression::predict(const MatrixXf &samples, VectorXf &predictions) {
+    // TODO
     /*if (_params == something)
         return;
     */
