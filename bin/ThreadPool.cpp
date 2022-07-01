@@ -3,19 +3,19 @@
 /* create a pool of num_threads detached threads */
 template<typename T>
 ThreadPool<T>::ThreadPool(function<void(T &)> &task_func, int num_threads) {
-    this->task_func = task_func;
-    this->terminate = false;
+    task_func = task_func;
+    terminate = false;
     int i;
     for (i = 0; i < num_threads; i++) {
-        this->threads.emplace_back(thread([this]() -> void { thread_func(); }));
-        this->threads.back().detach();
+        threads.emplace_back(thread([this]() -> void { thread_func(); }));
+        threads.back().detach();
     }
 }
 
 template<typename T>
 void ThreadPool<T>::enqueue(T t) {
     unique_lock lock{m};
-    this->jobs.push(t);
+    jobs.push(t);
     cv.notify_one();
 }
 
@@ -42,3 +42,4 @@ void ThreadPool<T>::thread_func() {
     }
 }
 
+template<> ThreadPool<AlternationTask>::ThreadPool(function<void(AlternationTask &)> &task_func, int num_threads);

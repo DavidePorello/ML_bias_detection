@@ -2,11 +2,12 @@
 
 using namespace std;
 
-BiasDetection::BiasDetection(const Eigen::MatrixXf &dataset, vector<double> &labels, int &attribute, int &num_categories,
+BiasDetection::BiasDetection(const Eigen::MatrixXf &dataset, vector<double> &labels, int &attribute,
+                             int &num_categories,
                              const int &num_threads) {
     this->dataset = dataset;
     this->labels = labels;
-    this->attribute = attribute;
+    this->attribute_index = attribute;
     this->num_categories = num_categories;
     this->num_threads = num_threads;
 }
@@ -26,7 +27,7 @@ void BiasDetection::compute_bias() {
     // train and predict on the alternated dataset
     for (int i = 0; i < num_categories; i++)
         for (int j = i + 1; j < num_categories; j++) {
-            AlternationTask task(i,j);
+            AlternationTask task(i, j);
             pool.enqueue(task);
         }
 
@@ -36,33 +37,42 @@ void BiasDetection::compute_bias() {
 
 }
 
-void BiasDetection::train_model(AlternationTask &t) const {
-    if(t.getCategory1() > 0)
+void BiasDetection::train_model(AlternationTask &t) {
+    Eigen::MatrixXf ds = this->dataset;
+    Eigen::VectorXf predictions;
+
+    // compute the alternation function
+    if (t.to_be_alternated())
+        ds = getAlternatedDataset(t.getCategory1(), t.getCategory2());
+
+    //TODO train and get predictions
+    (void)ds;
+
+    promise_predictions.set_value(predictions);
 }
 
-AlternationTask::AlternationTask(bool stop_signal) {
-    this->category1 = -1;
-    this->category2 = -1;
-    this->stop_signal = stop_signal;
+/**
+ * get a new copy of the dataset with an alternated attribute
+ * */
+Eigen::MatrixXf BiasDetection::getAlternatedDataset(const int &cat1, const int &cat2) const {
+    // create a copy of the dataset. Eigen takes care of the dynamic allocation
+    Eigen::MatrixXf d = dataset;
+    auto c1 = static_cast<float>(cat1);
+    auto c2 = static_cast<float>(cat2);
+
+    // alternation
+    for (int i = 0; i < d.rows(); i++) {
+        // if attribute has value c1 or c2, assign it to the other. since they are floats, we can't use normal equivalence ==
+        if (abs(d(i) - c1) < 0.05)
+            d(i) = c2;
+        else if (abs(d(i) - c2) < 0.05)
+            d(i) = c1;
+    }
+
+    return d;
 }
 
-AlternationTask::AlternationTask(int category1, int category2) {
-    this->category1 = category1;
-    this->category2 = category2;
-    this->stop_signal = false;
-}
 
-bool AlternationTask::isStopTask() const {
-    return stop_signal;
-}
-
-const int &AlternationTask::getCategory1() const {
-    return category1;
-}
-
-const int &AlternationTask::getCategory2() const {
-    return category2;
-}
 
 
 

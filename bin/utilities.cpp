@@ -12,7 +12,7 @@ double kl_divergence(const VectorXf &p, const VectorXf &q);
 void train_and_predict(const MatrixXf &train, const VectorXf &responses, const MatrixXf &samples,
                           ModelML &model, VectorXf &predictions);
 
-int main()
+int main_old()
 {
     // small test program
     MatrixXf train {{1,2,3},{2.3,4,5},{9,0.8,2}};
@@ -33,6 +33,8 @@ int main()
 
     std::cout << "--------- KL divergence ---------" << std::endl;
     std::cout << kl_divergence(predictions1, predictions2) << std::endl;
+
+    return 0;
 }
 
 /** Utility function to compute the standard deviation in place.

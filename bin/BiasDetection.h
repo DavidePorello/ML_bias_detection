@@ -3,25 +3,11 @@
 
 #include "Eigen/core"
 #include "ThreadPool.h"
+#include <future>
 
 using namespace std;
 
-class AlternationTask : public Task {
-private:
-    int category1;
-    int category2;
-    bool stop_signal;
-public:
-    explicit AlternationTask(bool stop_signal);
 
-    AlternationTask(int category1, int category2);
-
-    [[nodiscard]] bool isStopTask() const override;
-
-    const int &getCategory1() const;
-    const int &getCategory2() const;
-    bool
-};
 
 
 class BiasDetection {
@@ -30,13 +16,16 @@ public:
 
     void compute_bias();
 
-    void train_model(AlternationTask &t) const;
+    void train_model(AlternationTask &t);
+
 private:
-    const Eigen::MatrixXf dataset;
+    Eigen::MatrixXf dataset;
     vector<double> labels;
-    int attribute;
+    int attribute_index;
     int num_categories;
     int num_threads;
+    promise<Eigen::VectorXf> promise_predictions;
+    Eigen::MatrixXf getAlternatedDataset(const int &cat1, const int &cat2) const;
 };
 
 
