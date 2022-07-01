@@ -21,7 +21,7 @@ void BiasDetection::compute_bias() {
     ThreadPool<AlternationTask> pool(alternation_func, this->num_threads);
 
     // train and predict on the normal dataset
-    AlternationTask normal_task(false);
+    AlternationTask normal_task;
     pool.enqueue(normal_task);
 
     // train and predict on the alternated dataset

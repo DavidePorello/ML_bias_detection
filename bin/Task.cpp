@@ -1,9 +1,17 @@
 #include "Task.h"
 
+
+
 AlternationTask::AlternationTask(bool stop_signal) {
     this->category1 = -1;
     this->category2 = -1;
     this->stop_signal = stop_signal;
+}
+
+AlternationTask::AlternationTask() {
+    this->category1 = -1;
+    this->category2 = -1;
+    this->stop_signal = false;
 }
 
 AlternationTask::AlternationTask(int category1, int category2) {
@@ -27,3 +35,5 @@ const int &AlternationTask::getCategory2() const {
 bool AlternationTask::to_be_alternated() const {
     return (category1 > 0 && category2 > 0);
 }
+
+

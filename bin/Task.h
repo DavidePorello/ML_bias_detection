@@ -12,6 +12,7 @@ private:
     int category2;
     bool stop_signal;
 public:
+    AlternationTask();
     explicit AlternationTask(bool stop_signal);
 
     AlternationTask(int category1, int category2);

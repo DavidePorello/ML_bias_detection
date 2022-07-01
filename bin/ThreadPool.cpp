@@ -42,4 +42,4 @@ void ThreadPool<T>::thread_func() {
     }
 }
 
-template<> ThreadPool<AlternationTask>::ThreadPool(function<void(AlternationTask &)> &task_func, int num_threads);
+template class ThreadPool<AlternationTask>;
