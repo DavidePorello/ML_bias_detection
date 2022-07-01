@@ -5,7 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(sdp_project main.cpp dataset/Dataset.cpp dataset/Dataset.h dataset/RawDataRecord.cpp dataset/RawDataRecord.h dataset/CleanedDataset.cpp dataset/CleanedDataset.h)
 
-# add MLpack library
+# add Boost library
+include_directories("C:/Program Files/boost/boost_1_66_0")
+
+# add Armadillo library
 include_directories("C:/Program Files/armadillo-11.2.1/include")
 
 # add MLpack library

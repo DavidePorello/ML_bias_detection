@@ -1,13 +1,14 @@
 #include <iostream>
-#include <memory>
 #include "dataset/Dataset.h"
+#include "dataset/CleanedDataset.h"
 
 using namespace std;
 
 int main() {
+    CleanedDataset d;
+    mat m = d.loadDataset();
 
-    Dataset d;
-    cout << d.getLength() << endl;
+
 
     return 0;
 }
