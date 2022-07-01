@@ -1,15 +1,19 @@
 #ifndef SDP_PROJECT_CLEANEDDATASET_H
 #define SDP_PROJECT_CLEANEDDATASET_H
 
-//#include "armadillo"
+#include "armadillo"
 
-#include "mlpack/core.hpp"
-
+using namespace std;
 using namespace arma;
 
 class CleanedDataset {
+private:
+    vector<string> classes;
 public:
-    mat loadDataset();
+    mat getDataset();
+    std::vector<string> getClasses();
+    std::vector<double> getLabels();
+    int getAttributeIndex(const char *attribute);
 };
 
 
