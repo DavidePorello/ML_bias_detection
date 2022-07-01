@@ -2,7 +2,7 @@
 
 using namespace Eigen;
 
-const VectorXf ModelML::getParams() {
+VectorXf ModelML::getParams() const {
     return _params;
 }
 

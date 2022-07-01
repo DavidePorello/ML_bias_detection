@@ -1,4 +1,5 @@
 #include "LinearRegression.h"
+#include "Eigen/LU"
 using namespace Eigen;
 
 /** This function is used to train a multiple linear regression model.
