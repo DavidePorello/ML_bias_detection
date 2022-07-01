@@ -15,15 +15,15 @@ void BiasDetection::compute_bias() {
 
     // create thread pool
     function<void(AlternationTask &)> alternation_func = [this](AlternationTask t) -> void {
-        this->compute_alternation(t);
+        this->train_model(t);
     };
     ThreadPool<AlternationTask> pool(alternation_func, this->num_threads);
 
-    // train on the normal dataset
+    // train and predict on the normal dataset
     AlternationTask normal_task(false);
     pool.enqueue(normal_task);
 
-    // train on the alternated dataset
+    // train and predict on the alternated dataset
     for (int i = 0; i < num_categories; i++)
         for (int j = i + 1; j < num_categories; j++) {
             AlternationTask task(i,j);
@@ -36,8 +36,8 @@ void BiasDetection::compute_bias() {
 
 }
 
-void BiasDetection::compute_alternation(AlternationTask &t) const {
-
+void BiasDetection::train_model(AlternationTask &t) const {
+    if(t.getCategory1() > 0)
 }
 
 AlternationTask::AlternationTask(bool stop_signal) {
@@ -54,6 +54,14 @@ AlternationTask::AlternationTask(int category1, int category2) {
 
 bool AlternationTask::isStopTask() const {
     return stop_signal;
+}
+
+const int &AlternationTask::getCategory1() const {
+    return category1;
+}
+
+const int &AlternationTask::getCategory2() const {
+    return category2;
 }
 
 

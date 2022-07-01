@@ -17,6 +17,10 @@ public:
     AlternationTask(int category1, int category2);
 
     [[nodiscard]] bool isStopTask() const override;
+
+    const int &getCategory1() const;
+    const int &getCategory2() const;
+    bool
 };
 
 
@@ -26,7 +30,7 @@ public:
 
     void compute_bias();
 
-    void compute_alternation(AlternationTask &t) const;
+    void train_model(AlternationTask &t) const;
 private:
     const Eigen::MatrixXf dataset;
     vector<double> labels;
