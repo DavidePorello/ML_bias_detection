@@ -31,11 +31,11 @@ int main()
  *  @param q is the array of alternative predicted values
  */
 double kl_divergence(const vec& p, const vec& q) {
-    // compute mean and variance
+    // compute mean and standard deviation
     double mu_1 = mean(p);
-    double sigma_1 = var(p);
+    double sigma_1 = stddev(p);
     double mu_2 = mean(q);
-    double sigma_2 = var(q);
+    double sigma_2 = stddev(q);
     double diff = mu_1 - mu_2;
     // now, compute the KL divergence
     double kl = log(sigma_2/sigma_1) + (sigma_1*sigma_1 + diff*diff)/(2*sigma_2*sigma_2) - 0.5;
