@@ -1,6 +1,11 @@
+
 cmake_minimum_required(VERSION 3.17)
 project(sdp_project)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(sdp_project main.cpp dataset/Dataset.cpp dataset/Dataset.h dataset/RawDataRecord.cpp dataset/RawDataRecord.h)
+find_package (Eigen3 3.4 REQUIRED NO_MODULE)
+
+add_executable(${PROJECT_NAME} main.cpp bin/utilities.cpp) #The name of the cpp file and its path can vary
+
+target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
