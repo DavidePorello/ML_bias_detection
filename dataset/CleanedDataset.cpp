@@ -1,8 +1,21 @@
+#include <memory>
 #include "CleanedDataset.h"
 
-mat CleanedDataset::getDataset() {
-    mat m(10, 40, fill::randu);
-    return m;
+CleanedDataset::CleanedDataset() {
+    this->dataset = Eigen::MatrixXf{{0, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1},
+                                    {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1},
+                                    {2, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1},
+                                    {3, 2, 3, 4, 5, 6, 7, 8, 9, 0, 2},
+                                    {4, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4},
+                                    {5, 2, 3, 4, 5, 6, 7, 8, 9, 0, 7},
+                                    {6, 2, 3, 4, 5, 6, 7, 8, 9, 0, 9},
+                                    {7, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1},
+                                    {8, 2, 3, 4, 5, 6, 7, 8, 9, 0, 76},
+                                    {9, 2, 3, 4, 5, 6, 7, 8, 9, 0, 2405}};
+}
+
+const Eigen::MatrixXf &CleanedDataset::getDataset() {
+    return dataset;
 }
 
 vector<string> CleanedDataset::getClasses() {

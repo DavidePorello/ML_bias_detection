@@ -1,16 +1,17 @@
 #ifndef SDP_PROJECT_CLEANEDDATASET_H
 #define SDP_PROJECT_CLEANEDDATASET_H
 
-#include "armadillo"
+#include "Eigen/core"
 
 using namespace std;
-using namespace arma;
 
 class CleanedDataset {
 private:
+    Eigen::MatrixXf dataset;
     vector<string> classes;
 public:
-    mat getDataset();
+    CleanedDataset();
+    const Eigen::MatrixXf &getDataset();
     std::vector<string> getClasses();
     std::vector<double> getLabels();
     int getAttributeIndex(const char *attribute);

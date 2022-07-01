@@ -1,11 +1,10 @@
 #ifndef SDP_PROJECT_BIASDETECTION_H
 #define SDP_PROJECT_BIASDETECTION_H
 
-#include "armadillo"
+#include "Eigen/core"
 #include "ThreadPool.h"
 
 using namespace std;
-using namespace arma;
 
 class AlternationTask : public Task {
 private:
@@ -23,13 +22,13 @@ public:
 
 class BiasDetection {
 public:
-    BiasDetection(mat &dataset, vector<double> &labels, int &attribute, int &num_categories, const int &num_threads);
+    BiasDetection(const Eigen::MatrixXf &dataset, vector<double> &labels, int &attribute, int &num_categories, const int &num_threads);
 
     void compute_bias();
 
     void compute_alternation(AlternationTask &t) const;
 private:
-    mat dataset;
+    const Eigen::MatrixXf dataset;
     vector<double> labels;
     int attribute;
     int num_categories;

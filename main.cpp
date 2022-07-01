@@ -16,7 +16,7 @@ using namespace std;
 
 int main() {
     CleanedDataset d;
-    mat m = d.getDataset();
+    const Eigen::MatrixXf m = d.getDataset();
     vector<string> classes = d.getClasses();
     vector<double> labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);

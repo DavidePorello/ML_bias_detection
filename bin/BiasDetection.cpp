@@ -2,7 +2,7 @@
 
 using namespace std;
 
-BiasDetection::BiasDetection(mat &dataset, vector<double> &labels, int &attribute, int &num_categories,
+BiasDetection::BiasDetection(const Eigen::MatrixXf &dataset, vector<double> &labels, int &attribute, int &num_categories,
                              const int &num_threads) {
     this->dataset = dataset;
     this->labels = labels;
