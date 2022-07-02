@@ -1,7 +1,7 @@
 #ifndef SDP_PROJECT_LINEARREGRESSION_H
 #define SDP_PROJECT_LINEARREGRESSION_H
 
-#include <Eigen/core>
+#include <Eigen/Core>
 #include "ModelML.h"
 
 class LinearRegression: public ModelML{

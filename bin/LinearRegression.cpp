@@ -1,4 +1,5 @@
 #include "LinearRegression.h"
+#include <stdexcept>
 #include "Eigen/LU"
 using namespace Eigen;
 
@@ -17,7 +18,7 @@ void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
  * */
 void LinearRegression::predict(const MatrixXf &samples, VectorXf &predictions) {
     if (_params.size()==0)
-        return;
+        throw std::runtime_error("Model has not been trained yet!");
     predictions = samples*_params;
 }
 

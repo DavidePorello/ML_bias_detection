@@ -3,7 +3,7 @@
 #ifndef SDP_PROJECT_MODELML_H
 #define SDP_PROJECT_MODELML_H
 
-#include <Eigen/core>
+#include <Eigen/Core>
 
 class ModelML {
     public:
