@@ -1,14 +1,11 @@
 #ifndef SDP_PROJECT_BIASDETECTION_H
 #define SDP_PROJECT_BIASDETECTION_H
 
-#include "Eigen/core"
+#include "Eigen/Core"
 #include "ThreadPool.h"
 #include <future>
 
 using namespace std;
-
-
-
 
 class BiasDetection {
 public:

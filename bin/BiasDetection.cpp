@@ -1,3 +1,4 @@
+#include <iostream>
 #include "BiasDetection.h"
 
 using namespace std;
@@ -35,6 +36,7 @@ void BiasDetection::compute_bias() {
     AlternationTask stop_task(true);
     pool.enqueue(stop_task);
 
+    pool.join_threads();
 }
 
 void BiasDetection::train_model(AlternationTask &t) {
@@ -46,7 +48,8 @@ void BiasDetection::train_model(AlternationTask &t) {
         ds = getAlternatedDataset(t.getCategory1(), t.getCategory2());
 
     //TODO train and get predictions
-    (void)ds;
+    cout << t.getCategory1() << ", " << t.getCategory2() << endl;
+    cout << ds << endl << endl;
 
     promise_predictions.set_value(predictions);
 }

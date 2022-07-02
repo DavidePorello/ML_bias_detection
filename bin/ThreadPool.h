@@ -14,12 +14,13 @@ using namespace std;
 template<typename T>
 class ThreadPool {
 public:
-    ThreadPool(function<void(T &)>& task_func, int num_threads);
+    ThreadPool(const function<void(T &)>& task_func, int num_threads);
 
     void enqueue(T t);
 
+    void join_threads();
 private:
-    const function<void(T &)> task_func;
+    function<void(T &)> task_func;
     queue<T> jobs;
     mutex m;
     condition_variable cv;
@@ -27,7 +28,6 @@ private:
     bool terminate;
 
     void thread_func();
-
 };
 
 
