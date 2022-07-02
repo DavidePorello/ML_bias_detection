@@ -21,7 +21,6 @@ private:
     int attribute_index;
     int num_categories;
     int num_threads;
-    promise<Eigen::VectorXf> promise_predictions;
     Eigen::MatrixXf getAlternatedDataset(const int &cat1, const int &cat2) const;
 };
 

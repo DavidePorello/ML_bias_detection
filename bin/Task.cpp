@@ -36,4 +36,10 @@ bool AlternationTask::to_be_alternated() const {
     return (category1 > 0 && category2 > 0);
 }
 
+future<Eigen::VectorXf> AlternationTask::get_future(){
+    return promise_predictions.get_future();
+}
+void AlternationTask::set_predictions(Eigen::VectorXf &preds){
+    promise_predictions.set_value(preds);
+}
 

@@ -2,19 +2,21 @@
 #include "ThreadPool.h"
 
 template<typename T>
-ThreadPool<T>::ThreadPool(const function<void(T &)> &task_func, int num_threads) {
+ThreadPool<T>::ThreadPool(const function<void(T)> &task_func, int num_threads, const bool run_threads_detached) {
     this->task_func = task_func;
     terminate = false;
     int i;
     for (i = 0; i < num_threads; i++) {
         threads.emplace_back(thread([this]() -> void { thread_func(); }));
+        if (run_threads_detached)
+            threads.back().detach();
     }
 }
 
 template<typename T>
 void ThreadPool<T>::enqueue(T t) {
     unique_lock lock{m};
-    jobs.push(t);
+    jobs.push(move(t));
     cv.notify_one();
 }
 
@@ -28,7 +30,7 @@ void ThreadPool<T>::thread_func() {
                 cv.wait(lock);
             if (terminate)
                 return;
-            t = jobs.front();
+            t = move(jobs.front());
             jobs.pop();
             // if the task is a termination task, signal other threads and exit
             if (t.isStopTask()) {
@@ -37,14 +39,15 @@ void ThreadPool<T>::thread_func() {
                 return;
             }
         }
-        this->task_func(t);
+        this->task_func(move(t));
     }
 }
 
 template<typename T>
 void ThreadPool<T>::join_threads() {
-    for(auto& t : threads)
+    for (auto &t : threads)
         t.join();
 }
 
-template class ThreadPool<AlternationTask>;
+template
+class ThreadPool<AlternationTask>;
