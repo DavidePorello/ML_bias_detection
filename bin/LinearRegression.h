@@ -6,8 +6,10 @@
 
 class LinearRegression: public ModelML{
     public:
-        void fit(const Eigen::MatrixXf &train, const Eigen::VectorXf &responses);
-        void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions);
+        void fit(const Eigen::MatrixXf &train, const Eigen::VectorXf &responses) override;
+        void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions) override;
+    private:
+        void _preprocess(Eigen::MatrixXf &samplesCopy, Eigen::VectorXf &labelsCopy);
 };
 
 

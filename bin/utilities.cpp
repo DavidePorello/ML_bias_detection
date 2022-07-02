@@ -1,53 +1,7 @@
-//
-// Created by ilapi on 30/06/2022.
-//
-
-#include <iostream>
 #include <Eigen/Core>
 #include "ModelML.h"
-#include "LinearRegression.h"
-#include "PolynomialRegression.h"
 
 using namespace Eigen;
-
-double kl_divergence(const VectorXf &p, const VectorXf &q);
-void train_and_predict(const MatrixXf &train, const VectorXf &responses, const MatrixXf &samples,
-                          ModelML &model, VectorXf &predictions);
-
-int main()
-{
-    // small test program
-    MatrixXf train {{1,2,3},{2.3,4,5},{9,0.8,2}};
-    VectorXf responses {{1,2,3}};
-    LinearRegression lr;
-    PolynomialRegression pr(3);
-
-    MatrixXf samples1 {{1,2,3},{2.3,4,5}};
-    VectorXf predictions1_lr;
-    VectorXf predictions1_pr;
-    train_and_predict(train, responses, samples1, lr, predictions1_lr);
-    std::cout << "--------- LINEAR REGRESSION - Predictions1 (should be 1,2) ---------" << std::endl;
-    std::cout << predictions1_lr << std::endl;
-    train_and_predict(train, responses, samples1, pr, predictions1_pr);
-    std::cout << "--------- POLYNOMIAL REGRESSION - Predictions1 ---------" << std::endl;
-    std::cout << predictions1_pr << std::endl;
-
-
-    MatrixXf samples2 {{0.5,2,5},{6.3,4,2}};
-    VectorXf predictions2_lr;
-    VectorXf predictions2_pr;
-    train_and_predict(train, responses, samples2, lr, predictions2_lr);
-    std::cout << "--------- LINEAR REGRESSION - Predictions2 ---------" << std::endl;
-    std::cout << predictions2_lr << std::endl;
-    train_and_predict(train, responses, samples2, pr, predictions2_pr);
-    std::cout << "--------- POLYNOMIAL REGRESSION - Predictions2 ---------" << std::endl;
-    std::cout << predictions2_pr << std::endl;
-
-    std::cout << "--------- LINEAR REGRESSION - KL divergence ---------" << std::endl;
-    std::cout << kl_divergence(predictions1_lr, predictions2_lr) << std::endl;
-    std::cout << "--------- POLYNOMIAL REGRESSION - KL divergence ---------" << std::endl;
-    std::cout << kl_divergence(predictions1_pr, predictions2_pr) << std::endl;
-}
 
 /** Utility function to compute the standard deviation in place.
  *  @param p the array we want to compute the standard deviation
