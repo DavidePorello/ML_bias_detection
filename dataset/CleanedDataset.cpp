@@ -38,10 +38,8 @@ vector<string> CleanedDataset::getClasses() {
     return classes;
 }
 
-std::vector<double> CleanedDataset::getLabels() {
-    vector<double> labels(10, 0);
-    for (int i = 0; i < 10; i++)
-        labels[i] = 1000 + i;
+Eigen::VectorXf CleanedDataset::getLabels() {
+    Eigen::VectorXf labels = Eigen::VectorXf::LinSpaced(10, 1000, 1010);
     return labels;
 }
 

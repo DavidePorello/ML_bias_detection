@@ -49,5 +49,5 @@ void ThreadPool<T>::join_threads() {
         t.join();
 }
 
-template
-class ThreadPool<AlternationTask>;
+template class ThreadPool<AlternationTask>;
+template class ThreadPool<KFoldTask>;

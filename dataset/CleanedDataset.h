@@ -13,7 +13,7 @@ public:
     CleanedDataset();
     const Eigen::MatrixXf &getDataset();
     std::vector<string> getClasses();
-    std::vector<double> getLabels();
+    Eigen::VectorXf getLabels();
     int getAttributeIndex(const char *attribute);
 };
 

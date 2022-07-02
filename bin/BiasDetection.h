@@ -1,27 +1,27 @@
 #ifndef SDP_PROJECT_BIASDETECTION_H
 #define SDP_PROJECT_BIASDETECTION_H
 
+#include <future>
 #include "Eigen/Core"
 #include "ThreadPool.h"
-#include <future>
+
 
 using namespace std;
 
 class BiasDetection {
 public:
-    BiasDetection(const Eigen::MatrixXf &dataset, vector<double> &labels, int &attribute, int &num_categories, const int &num_threads);
+    BiasDetection(const Eigen::MatrixXf &dataset, int &attribute, int &num_categories,
+                  const int &num_threads);
 
-    void compute_bias();
-
-    void train_model(AlternationTask &t);
+    vector<future<Eigen::MatrixXf>> compute_bias(const int &parallelization_mode);
 
 private:
     Eigen::MatrixXf dataset;
-    vector<double> labels;
     int attribute_index;
     int num_categories;
     int num_threads;
-    Eigen::MatrixXf getAlternatedDataset(const int &cat1, const int &cat2) const;
+
+    void compute_alternated_dataset(AlternationTask &t);
 };
 
 
