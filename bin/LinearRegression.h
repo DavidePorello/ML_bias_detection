@@ -9,7 +9,9 @@ class LinearRegression: public ModelML{
         LinearRegression();
         void fit(const Eigen::MatrixXf &train, const Eigen::VectorXf &responses) override;
         void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions) override;
+        bool is_trained();
     private:
+        Eigen::VectorXf _params;
         float _intercept;
         void _preprocess(Eigen::MatrixXf &train, Eigen::VectorXf &responses,
                          Eigen::RowVectorXf &train_mean, float &resp_mean);

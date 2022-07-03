@@ -8,6 +8,7 @@ using namespace Eigen;
 
 void train_and_predict(const MatrixXf &train, const VectorXf &responses, const MatrixXf &samples,
                        ModelML &model, VectorXf &predictions);
+double kl_divergence(const VectorXf &p, const VectorXf &q, bool unbiased=false);
 
 int main() {
     // simple test program
@@ -22,14 +23,16 @@ int main() {
     VectorXf predictions_pr;
 
     train_and_predict(train, resp, sample, lr, predictions_lr);
-    std::cout << "---- LINEAR REGRESSION (exp: 6.5623 -0.21174 2.6021) ----" << std::endl;
+    std::cout << "---- LINEAR REGRESSION (expected: 6.5623 -0.21174 2.6021) ----" << std::endl;
     std::cout << predictions_lr << std::endl;
 
     train_and_predict(train, resp, sample, pr, predictions_pr);
-    std::cout << "---- POLYNOMIAL REGRESSION (exp: -10.130 1.3625 2.6243) ----" << std::endl;
+    std::cout << "---- POLYNOMIAL REGRESSION (expected: -10.130 1.3625 2.6243) ----" << std::endl;
     std::cout << predictions_pr << std::endl;
 
-    //std::cout
+    std::cout << "---- KL DIVERGENCE ----" << std::endl;
+    std::cout << "linear -> polynomial: " << kl_divergence(predictions_lr, predictions_pr) << std::endl;
+    std::cout << "polynomial -> linear: " << kl_divergence(predictions_pr, predictions_lr) << std::endl;
 }
 
 /** Utility function to compute the standard deviation in place.
@@ -60,13 +63,15 @@ double stddev(const VectorXf &p, double mean, bool unbiased=false) {
 /** Computes the KL divergence (p||q)
  *  @param p is the array of predicted values
  *  @param q is the array of alternative predicted values
+ *  @param unbiased if true, we divide by N-1 instead of N to reduce bias
+ *  (https://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation)
  */
-double kl_divergence(const VectorXf &p, const VectorXf &q) {
+double kl_divergence(const VectorXf &p, const VectorXf &q, bool unbiased) {
     // compute mean and standard deviation
     double mu_1 = p.mean();
-    double sigma_1 = stddev(p, mu_1);
+    double sigma_1 = stddev(p, mu_1, unbiased);
     double mu_2 = q.mean();
-    double sigma_2 = stddev(q, mu_2);
+    double sigma_2 = stddev(q, mu_2, unbiased);
     double diff = mu_1 - mu_2;
     // now, compute the KL divergence
     double kl = log(sigma_2/sigma_1) + ((sigma_1*sigma_1 + diff*diff)/(2*sigma_2*sigma_2)) - 0.5;

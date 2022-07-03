@@ -13,13 +13,13 @@ class PolynomialRegression: public ModelML {
         void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions) override;
     private:
         int _degree;
-        long long _expandedCols;
-        Eigen::VectorXi _expandedColsInc;
+        long long _expanded_cols;
+        Eigen::VectorXi _expanded_cols_inc;
         LinearRegression _lr;
-        void _polyFeatures(const Eigen::MatrixXf &samples, Eigen::MatrixXf &expanded);
-        void _polyFeatures_R(const Eigen::MatrixXf &samples, Eigen::MatrixXf &expanded, int fixed_row, Eigen::VectorXi &count_deg,
-                            int prev_col=0, float partial=1, int curr_degree=1);
-        void _polyFeatNumber(int features);
+        void _poly_features(const Eigen::MatrixXf &samples, Eigen::MatrixXf &expanded);
+        void _poly_features_R(const Eigen::MatrixXf &samples, Eigen::MatrixXf &expanded, int fixed_row, Eigen::VectorXi &count_deg,
+                              int prev_col= 0, float partial= 1, int curr_degree= 1);
+        void _poly_feat_number(int features);
         long long _fact(int n);
 };
 

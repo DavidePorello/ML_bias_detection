@@ -7,7 +7,7 @@ PolynomialRegression::PolynomialRegression(int degree) {
     if (degree<1 || degree>4)
         throw std::runtime_error("Wrong or not supported degree value.");
     _degree = degree;
-    _expandedCols = 0;
+    _expanded_cols = 0;
     _lr = LinearRegression();
 }
 
@@ -19,12 +19,11 @@ void PolynomialRegression::fit(const MatrixXf &train, const VectorXf &responses)
     // expand features
     if (_degree!=1) {
         MatrixXf exp;
-        _polyFeatures(train, exp);
+        _poly_features(train, exp);
         _lr.fit(exp, responses);
     } else {
         _lr.fit(train, responses);
     }
-    _params = _lr.getParams();
 }
 
 /** This function is used to predict responses using a polynomial regression model.
@@ -32,23 +31,23 @@ void PolynomialRegression::fit(const MatrixXf &train, const VectorXf &responses)
   *  @param predictions is a column vector which WILL store the computed responses, one for each sample
  * */
 void PolynomialRegression::predict(const MatrixXf &samples, VectorXf &predictions) {
-    if (_params.size()==0)
+    if (!_lr.is_trained())
         throw std::runtime_error("Model has not been trained yet!");
     if (_degree!=1) {
         MatrixXf expanded;
-        _polyFeatures(samples, expanded);
+        _poly_features(samples, expanded);
         _lr.predict(expanded, predictions);
     } else
         _lr.predict(samples, predictions);
 }
 
 /** This (private) function computes the feature expansion to support polynomial regression. */
-void PolynomialRegression::_polyFeatures(const MatrixXf &samples, MatrixXf &expanded) {
+void PolynomialRegression::_poly_features(const MatrixXf &samples, MatrixXf &expanded) {
     // predict the number of features
-    if (_expandedCols==0) {
-        _polyFeatNumber(samples.cols());
+    if (_expanded_cols == 0) {
+        _poly_feat_number(samples.cols());
     }
-    expanded.resize(samples.rows(), _expandedCols);
+    expanded.resize(samples.rows(), _expanded_cols);
     // for each sample, generate all combinations
     for (int i=0; i<samples.rows(); i++) {
         // first, we put degree 0
@@ -56,33 +55,33 @@ void PolynomialRegression::_polyFeatures(const MatrixXf &samples, MatrixXf &expa
         // now, we start generating all combinations
         VectorXi count_deg;
         count_deg = VectorXi::Zero(_degree+1);
-        _polyFeatures_R(samples, expanded, i, count_deg);
+        _poly_features_R(samples, expanded, i, count_deg);
     }
 }
-void PolynomialRegression::_polyFeatures_R(const MatrixXf &samples, MatrixXf &expanded, int fixed_row, VectorXi &count_deg,
-                                          int prev_col, float partial, int curr_degree) {
+void PolynomialRegression::_poly_features_R(const MatrixXf &samples, MatrixXf &expanded, int fixed_row, VectorXi &count_deg,
+                                            int prev_col, float partial, int curr_degree) {
     float prod;
     for(int j=prev_col; j<samples.cols(); j++) {
         // add partial result to expanded
         prod = partial*samples(fixed_row,j);
-        expanded(fixed_row, count_deg[curr_degree]+_expandedColsInc[curr_degree]) = prod;
+        expanded(fixed_row, count_deg[curr_degree] + _expanded_cols_inc[curr_degree]) = prod;
         count_deg[curr_degree]++;
         if(curr_degree<_degree)
-            _polyFeatures_R(samples, expanded, fixed_row, count_deg, j, prod, curr_degree+1);
+            _poly_features_R(samples, expanded, fixed_row, count_deg, j, prod, curr_degree + 1);
     }
 }
 
 /** This function computes the number of columns to reshape the expanded features matrix */
-void PolynomialRegression::_polyFeatNumber(int features) {
+void PolynomialRegression::_poly_feat_number(int features) {
     long long res = 1;
     int n = features;
-    _expandedColsInc.resize(_degree+1);
-    _expandedColsInc[0] = 0;
+    _expanded_cols_inc.resize(_degree + 1);
+    _expanded_cols_inc[0] = 0;
     for (int k=1; k<=_degree; k++) {
-        _expandedColsInc[k] = static_cast<int>(res);
+        _expanded_cols_inc[k] = static_cast<int>(res);
         res += _fact(n+k-1)/(_fact(k)*_fact(n-1));
     }
-    _expandedCols = res;
+    _expanded_cols = res;
 }
 
 /** A simple utility to compute a factorial */

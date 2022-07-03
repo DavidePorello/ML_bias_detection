@@ -14,14 +14,14 @@ LinearRegression::LinearRegression() {
  * */
 void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
     // preprocess data
-    MatrixXf trainCopy(train);
-    VectorXf responsesCopy(responses);
+    MatrixXf train_copy(train);
+    VectorXf responses_copy(responses);
     RowVectorXf train_mean;
     train_mean.resize(train.cols());
     float resp_mean;
-    _preprocess(trainCopy, responsesCopy, train_mean, resp_mean);
+    _preprocess(train_copy, responses_copy, train_mean, resp_mean);
     // solve using the least square method
-    _params = trainCopy.completeOrthogonalDecomposition().solve(responsesCopy);
+    _params = train_copy.completeOrthogonalDecomposition().solve(responses_copy);
     // set intercept
     _intercept = resp_mean - train_mean*_params;
 }
@@ -31,11 +31,16 @@ void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
   *  @param predictions is a column vector which WILL store the computed responses, one for each sample
  * */
 void LinearRegression::predict(const MatrixXf &samples, VectorXf &predictions) {
-    if (_params.size()==0)
+    if (!is_trained())
         throw std::runtime_error("Model has not been trained yet!");
     predictions = samples*_params;
     for (float &value : predictions)
         value += _intercept;
+}
+
+/** This function returns true if the model has been trained, false otherwise. */
+bool LinearRegression::is_trained() {
+    return _params.size()!=0;
 }
 
 /** This function is used to preprocess data. Since we are working with a linear algorithm, it will surely require
