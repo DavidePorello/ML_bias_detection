@@ -46,6 +46,5 @@ void PlotML::alternation_plot(const string &og_attr, const string &alternated_at
     // set title
     fig.title(og_attr+"/"+alternated_attr+" Alternation");
     // show and save figure
-    fig.show();
     fig.save("./plots/alternation_"+og_attr+"_"+alternated_attr+".pdf");
 }
