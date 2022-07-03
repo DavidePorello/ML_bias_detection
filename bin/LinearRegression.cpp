@@ -3,6 +3,11 @@
 #include <Eigen/Dense>
 using namespace Eigen;
 
+// Default constructor
+LinearRegression::LinearRegression() {
+    _intercept = 0.0;
+}
+
 /** This function is used to train a multiple linear regression model.
   *  @param train is a matrix having a row for each sample and a column for each feature
   *  @param responses is a column vector storing the expected responses, one for each sample
@@ -11,9 +16,14 @@ void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
     // preprocess data
     MatrixXf trainCopy(train);
     VectorXf responsesCopy(responses);
-    _preprocess(trainCopy, responsesCopy);
+    RowVectorXf train_mean;
+    train_mean.resize(train.cols());
+    float resp_mean;
+    _preprocess(trainCopy, responsesCopy, train_mean, resp_mean);
     // solve using the least square method
-    _params = trainCopy.colPivHouseholderQr().solve(responsesCopy);
+    _params = trainCopy.fullPivHouseholderQr().solve(responsesCopy);
+    // set intercept
+    _intercept = resp_mean - train_mean*_params;
 }
 
 /** This function is used to predict responses using a multiple linear regression model.
@@ -24,27 +34,28 @@ void LinearRegression::predict(const MatrixXf &samples, VectorXf &predictions) {
     if (_params.size()==0)
         throw std::runtime_error("Model has not been trained yet!");
     predictions = samples*_params;
+    for (float &value : predictions)
+        value += _intercept;
 }
 
-/** This function is used to preprocess data. Since we are working with a liear algorithm, it will surely require
+/** This function is used to preprocess data. Since we are working with a linear algorithm, it will surely require
  *  having centered data (ie, we remove the mean from each feature).
  */
-void LinearRegression::_preprocess(MatrixXf &samplesCopy, VectorXf &labelsCopy) {
+void LinearRegression::_preprocess(MatrixXf &train, VectorXf &responses, RowVectorXf &train_mean, float &resp_mean) {
     int r, c;
-    double mu;
     // first, we focus on samples
-    for (c=0; c<samplesCopy.cols(); c++) {
+    for (c=0; c < train.cols(); c++) {
         // extract the column
-        auto col = samplesCopy.col(c);
+        auto col = train.col(c);
         // compute its mean
-        mu = col.mean();
+        train_mean[c] = col.mean();
         // remove the mean from the column
-        for(r=0; r<samplesCopy.rows(); r++)
-            col[r] -= mu;
+        for(r=0; r < train.rows(); r++)
+            col[r] -= train_mean[c];
     }
     // then, we focus on labels
-    mu = labelsCopy.mean();
-    for(r=0; r<labelsCopy.rows(); r++)
-        labelsCopy[r] -= mu;
+    resp_mean = responses.mean();
+    for(r=0; r < responses.rows(); r++)
+        responses[r] -= resp_mean;
 }
 
