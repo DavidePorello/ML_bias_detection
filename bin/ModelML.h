@@ -11,6 +11,11 @@ class ModelML {
         *  @param train is a matrix having a row for each sample and a column for each feature
         *  @param responses is a column vector storing the expected responses, one for each sample
         * */
+        virtual void fit(Eigen::MatrixXf &train, Eigen::VectorXf &responses) = 0;
+        /** This function is used to train a model. const version.
+        *  @param train is a matrix having a row for each sample and a column for each feature
+        *  @param responses is a column vector storing the expected responses, one for each sample
+        * */
         virtual void fit(const Eigen::MatrixXf &train, const Eigen::VectorXf &responses) = 0;
         /** This function is used to predict responses using a model.
         *  @param samples is a matrix having a row for each sample and a column for each feature

@@ -15,6 +15,21 @@ PolynomialRegression::PolynomialRegression(int degree) {
   *  @param train is a matrix having a row for each sample and a column for each feature
   *  @param responses is a column vector storing the expected responses, one for each sample
  * */
+void PolynomialRegression::fit(MatrixXf &train, VectorXf &responses) {
+    // expand features
+    if (_degree!=1) {
+        MatrixXf exp;
+        _poly_features(train, exp);
+        _lr.fit(exp, responses);
+    } else {
+        _lr.fit(train, responses);
+    }
+}
+
+/** This function is used to train a polynomial regression model. const version.
+  *  @param train is a matrix having a row for each sample and a column for each feature
+  *  @param responses is a column vector storing the expected responses, one for each sample
+ * */
 void PolynomialRegression::fit(const MatrixXf &train, const VectorXf &responses) {
     // expand features
     if (_degree!=1) {

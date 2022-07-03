@@ -12,10 +12,28 @@ LinearRegression::LinearRegression() {
   *  @param train is a matrix having a row for each sample and a column for each feature
   *  @param responses is a column vector storing the expected responses, one for each sample
  * */
-void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
+void LinearRegression::fit(MatrixXf &train, VectorXf &responses) {
     // preprocess data
+    RowVectorXf train_mean;
+    train_mean.resize(train.cols());
+    float resp_mean;
+    _preprocess(train, responses, train_mean, resp_mean);
+    // solve using the least square method
+    _params = train.completeOrthogonalDecomposition().solve(responses);
+    // set intercept
+    _intercept = resp_mean - train_mean*_params;
+}
+
+
+/** This function is used to train a multiple linear regression model. const version.
+  *  @param train is a matrix having a row for each sample and a column for each feature
+  *  @param responses is a column vector storing the expected responses, one for each sample
+ * */
+void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
+    //copy data
     MatrixXf train_copy(train);
     VectorXf responses_copy(responses);
+    // preprocess data
     RowVectorXf train_mean;
     train_mean.resize(train.cols());
     float resp_mean;
