@@ -1,18 +1,16 @@
 #ifndef SDP_PROJECT_DATARECORD_H
 #define SDP_PROJECT_DATARECORD_H
 
-#include <istream>
-#include <vector>
+#include "Eigen/core"
 
 using namespace std;
 
 class DataRecord {
 private:
-    short int age;
-    string classWorker;
-    string education;
+    //Eigen::VectorXf data;
+    vector<string> raw_data;
 public:
-
+    bool isPrunable();
 };
 
 

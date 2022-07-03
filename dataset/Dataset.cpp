@@ -6,9 +6,9 @@
 using namespace std;
 
 Dataset::Dataset() {
-    raw_dataset = LoadFile("dataset/ciao.txt");
-    //vector<RawDataRecord> train = LoadFile("census-income.data");
-    //this->raw_dataset.insert(this->raw_dataset.end(), train.begin(), train.end());
+    this->raw_dataset = this->LoadFile("dataset/census-income.data");
+    vector<RawDataRecord> train = this->LoadFile("dataset/census-income.test");
+    this->raw_dataset.insert(this->raw_dataset.end(), train.begin(), train.end());
 }
 
 vector<RawDataRecord> Dataset::LoadFile(const char *path) {
@@ -22,7 +22,7 @@ vector<RawDataRecord> Dataset::LoadFile(const char *path) {
     }
     while (getline(file, line)) {
         RawDataRecord r(line);
-        if (!r.isPrunable())
+        //if (!r.isPrunable())
             dataset.emplace_back(r);
     }
     file.close();
@@ -33,4 +33,7 @@ int Dataset::getLength() {
     return raw_dataset.size();
 }
 
+vector<string> Dataset::getRecord(int i) {
+    return raw_dataset[i].getRawData();
+}
 

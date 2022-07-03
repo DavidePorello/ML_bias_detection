@@ -2,18 +2,19 @@
 #define SDP_PROJECT_CLEANEDDATASET_H
 
 #include "Eigen/core"
+#include "DataRecord.h"
 
 using namespace std;
 
 class CleanedDataset {
 private:
-    Eigen::MatrixXf dataset;
+    //Eigen::MatrixXf dataset;
+    vector<DataRecord> dataset;
     vector<string> classes;
 public:
     CleanedDataset();
     const Eigen::MatrixXf &getDataset();
     std::vector<string> getClasses();
-    Eigen::VectorXf getLabels();
     int getAttributeIndex(const char *attribute);
 };
 

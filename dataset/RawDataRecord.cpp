@@ -24,3 +24,7 @@ bool RawDataRecord::isPrunable() {
             return true;
     return false;
 }
+
+vector<string> RawDataRecord::getRawData() {
+    return raw_data;
+}

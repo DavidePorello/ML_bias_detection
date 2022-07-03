@@ -14,6 +14,7 @@ private:
 public:
     Dataset();
     int getLength();
+    vector<string> getRecord(int i);
 };
 
 

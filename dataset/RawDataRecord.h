@@ -12,6 +12,7 @@ private:
 public:
     explicit RawDataRecord(const string& line);
     bool isPrunable();
+    vector<string> getRawData();
 };
 
 
