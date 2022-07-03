@@ -21,7 +21,7 @@ void LinearRegression::fit(const MatrixXf &train, const VectorXf &responses) {
     float resp_mean;
     _preprocess(trainCopy, responsesCopy, train_mean, resp_mean);
     // solve using the least square method
-    _params = trainCopy.fullPivHouseholderQr().solve(responsesCopy);
+    _params = trainCopy.completeOrthogonalDecomposition().solve(responsesCopy);
     // set intercept
     _intercept = resp_mean - train_mean*_params;
 }

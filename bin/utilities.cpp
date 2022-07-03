@@ -1,7 +1,36 @@
 #include <Eigen/Core>
+#include <iostream>
 #include "ModelML.h"
+#include "LinearRegression.h"
+#include "PolynomialRegression.h"
 
 using namespace Eigen;
+
+void train_and_predict(const MatrixXf &train, const VectorXf &responses, const MatrixXf &samples,
+                       ModelML &model, VectorXf &predictions);
+
+int main() {
+    // simple test program
+    MatrixXf train {{1,2},{2.3,-3.9},{9,0.8},{8, -0.3}};
+    VectorXf resp {{1,-1,6,5}};
+    MatrixXf sample {{4,9},{0,1},{6,-2}};
+
+    LinearRegression lr;
+    PolynomialRegression pr(2);
+
+    VectorXf predictions_lr;
+    VectorXf predictions_pr;
+
+    train_and_predict(train, resp, sample, lr, predictions_lr);
+    std::cout << "---- LINEAR REGRESSION (exp: 6.5623 -0.21174 2.6021) ----" << std::endl;
+    std::cout << predictions_lr << std::endl;
+
+    train_and_predict(train, resp, sample, pr, predictions_pr);
+    std::cout << "---- POLYNOMIAL REGRESSION (exp: -10.130 1.3625 2.6243) ----" << std::endl;
+    std::cout << predictions_pr << std::endl;
+
+    //std::cout
+}
 
 /** Utility function to compute the standard deviation in place.
  *  @param p the array we want to compute the standard deviation
