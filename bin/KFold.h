@@ -11,22 +11,24 @@ using namespace std;
 
 class KFold {
 public:
-    KFold(int num_folds, int num_threads, Eigen::VectorXf labels);
+    KFold(int num_folds, int num_threads, const Eigen::VectorXf &labels, ModelML &model);
 
-    future<vector<future<Eigen::VectorXf>>>&& compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset);
+    future<vector<future<Eigen::VectorXf>>> compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset);
 
     vector<future<Eigen::VectorXf>> compute_predictions(const Eigen::MatrixXf &dataset);
 
-    void set_model(ModelML *model_ml);
-
+    void join_threads();
 private:
     int num_folds;
     int num_threads;
     Eigen::VectorXf labels;
-    ModelML *model;
+    ModelML& model;
+    vector<unique_ptr<ThreadPool<KFoldTask>>> pools;
 
-    void run_model(Eigen::MatrixXf dataset, KFoldTask &t);
+    void run_model(KFoldTask &t);
+    [[nodiscard]] int get_fold_start_index(int num_records, int fold_index) const;
 };
+
 
 
 

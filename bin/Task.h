@@ -9,7 +9,12 @@ using namespace std;
 class Task {
 protected:
     bool stop_signal;
+
 public:
+    Task() : stop_signal(false) {};
+
+    explicit Task(bool stop_signal) : stop_signal(stop_signal) {};
+
     [[nodiscard]] bool isStopTask() const { return stop_signal; };
 };
 
@@ -25,11 +30,11 @@ public:
 
     AlternationTask(int category1, int category2);
 
-    const int &getCategory1() const;
+    [[nodiscard]] const int &getCategory1() const;
 
-    const int &getCategory2() const;
+    [[nodiscard]] const int &getCategory2() const;
 
-    bool to_be_alternated() const;
+    [[maybe_unused]] bool to_be_alternated() const;
 
     future<Eigen::MatrixXf> get_future();
 
@@ -39,15 +44,18 @@ public:
 class KFoldTask : public Task {
 private:
     int test_fold_index;
+    Eigen::MatrixXf dataset;
     promise<Eigen::VectorXf> promise_predictions;
 public:
     KFoldTask();
 
     explicit KFoldTask(bool stop_signal);
 
-    KFoldTask(int test_fold_index);
+    KFoldTask(Eigen::MatrixXf dataset, int test_fold_index);
 
-    const int &get_test_fold_index() const;
+    [[nodiscard]] const int &get_test_fold_index() const;
+
+    Eigen::MatrixXf &getDataset();
 
     future<Eigen::VectorXf> get_future();
 

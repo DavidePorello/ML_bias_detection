@@ -15,11 +15,13 @@ public:
 
     vector<future<Eigen::MatrixXf>> compute_bias(const int &parallelization_mode);
 
+    void join_threads();
 private:
     Eigen::MatrixXf dataset;
     int attribute_index;
-    int num_categories;
-    int num_threads;
+    int num_categories{};
+    int num_threads{};
+    unique_ptr<ThreadPool<AlternationTask>> pool;
 
     void compute_alternated_dataset(AlternationTask &t);
 };
