@@ -7,10 +7,11 @@
 using namespace std;
 
 class RawDataRecord {
+private:
+    vector<string> raw_data;
 public:
-    vector<string> raw_data; // TODO make private
     explicit RawDataRecord(const string& line);
-    bool is_prunable();
+    bool isPrunable();
 };
 
 

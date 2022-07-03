@@ -18,7 +18,7 @@ RawDataRecord::RawDataRecord(const string &line) {
     }
 }
 
-bool RawDataRecord::is_prunable() {
+bool RawDataRecord::isPrunable() {
     for(string& str : this->raw_data)
         if(str == "Not in universe")
             return true;

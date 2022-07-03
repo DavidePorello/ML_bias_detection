@@ -34,3 +34,8 @@
 # CLion files
 .idea
 cmake-build-debug
+
+#database
+dataset/census-income.test
+dataset/census-income.data
+dataset/cleaned-dataset.data

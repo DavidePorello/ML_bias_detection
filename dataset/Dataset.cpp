@@ -6,7 +6,9 @@
 using namespace std;
 
 Dataset::Dataset() {
-    this->raw_dataset = LoadFile("dataset/census-income.test"); // TODO also add records from train file
+    raw_dataset = LoadFile("dataset/ciao.txt");
+    //vector<RawDataRecord> train = LoadFile("census-income.data");
+    //this->raw_dataset.insert(this->raw_dataset.end(), train.begin(), train.end());
 }
 
 vector<RawDataRecord> Dataset::LoadFile(const char *path) {
@@ -20,7 +22,7 @@ vector<RawDataRecord> Dataset::LoadFile(const char *path) {
     }
     while (getline(file, line)) {
         RawDataRecord r(line);
-        if (!r.is_prunable())
+        if (!r.isPrunable())
             dataset.emplace_back(r);
     }
     file.close();
