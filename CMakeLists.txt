@@ -1,13 +1,27 @@
+
 cmake_minimum_required(VERSION 3.17)
 project(sdp_project)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(sdp_project main.cpp dataset/Dataset.cpp dataset/Dataset.h dataset/RawDataRecord.cpp dataset/RawDataRecord.h dataset/CleanedDataset.cpp dataset/CleanedDataset.h)
+# include and download sciplot
+include(FetchContent)
+FetchContent_Declare(sciplot_content
+        GIT_REPOSITORY https://github.com/sciplot/sciplot.git
+        GIT_TAG master)
 
-# add MLpack library
-include_directories("C:/Program Files/armadillo-11.2.1/include")
+FetchContent_GetProperties(sciplot_content)
+if(NOT sciplot_content_POPULATED)
+    FetchContent_Populate(sciplot_content)
+endif()
 
-# add MLpack library
-include_directories("C:/Program Files/mlpack")
-target_link_libraries(sdp_project "C:/Program Files/mlpack/lib/mlpack.lib")
+include_directories(${sciplot_content_SOURCE_DIR})
+
+# include Eigen
+find_package (Eigen3 3.4 REQUIRED NO_MODULE)
+
+add_executable(${PROJECT_NAME} main.cpp bin/utilities.cpp bin/LinearRegression.h bin/LinearRegression.cpp
+        bin/PolynomialRegression.h bin/PolynomialRegression.cpp bin/ModelML.h bin/plot_main.cpp bin/PlotML.h
+        bin/PlotML.cpp)
+
+target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
