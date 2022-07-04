@@ -28,5 +28,6 @@ On **Windows**, you can do the following:
 1. Download `gp543-win64-mingw.exe` from [here](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.4.3/)
 2. Run the executable
 3. Remember to check the option "_**Add application directory to your PATH environment variable**_"
-4. If your IDE was already open, close and re-open it, to refresh the PATH vaiable content
-#TODO add Linux installation
+4. If your IDE was already open, close and re-open it, to refresh the PATH vaiable content  
+
+# TODO add Linux installation
