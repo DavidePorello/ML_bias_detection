@@ -1,7 +1,6 @@
 #include "Dataset.h"
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 
 using namespace std;
 
@@ -16,13 +15,13 @@ vector<RawDataRecord> Dataset::LoadFile(const char *path) {
     ifstream file;
     string line;
     file.open(path, ios::in);
-    if (!file.is_open()) {
+    if(!file.is_open()) {
         cout << "Could not open file " << path << endl;
         exit(-1);
     }
-    while (getline(file, line)) {
+    while(getline(file, line)) {
         RawDataRecord r(line);
-        //if (!r.isPrunable())
+        if(!r.isPrunable())
             dataset.emplace_back(r);
     }
     file.close();

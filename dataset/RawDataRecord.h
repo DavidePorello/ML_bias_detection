@@ -9,6 +9,7 @@ using namespace std;
 class RawDataRecord {
 private:
     vector<string> raw_data;
+    vector<int> indexes;
 public:
     explicit RawDataRecord(const string& line);
     bool isPrunable();

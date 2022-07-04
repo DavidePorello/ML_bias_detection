@@ -8,9 +8,16 @@ using namespace std;
 int main() {
 
     Dataset d;
+    CleanedDataset c;
     cout << d.getLength() << endl;
-    for(string& str : d.getRecord(0))
-        cout << str << endl;
+    cout << d.getRecord(0).size() << endl;
+    int i = 0;
+    for(string& str : d.getRecord(0)){
+        cout << c.getClasses()[i] << ": " << str << endl;
+        i++;
+    }
+
+
 
     return 0;
 }

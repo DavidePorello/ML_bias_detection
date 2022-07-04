@@ -1,0 +1,12 @@
+age 0
+education 4
+marital stat 7
+race 10 
+hispanic origin 11
+sex 12
+reason for unemployment 14
+full or part time employment stat 15
+country of birth self 34
+citizenship 35
+
+

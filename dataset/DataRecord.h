@@ -8,9 +8,7 @@ using namespace std;
 class DataRecord {
 private:
     //Eigen::VectorXf data;
-    vector<string> raw_data;
 public:
-    bool isPrunable();
 };
 
 

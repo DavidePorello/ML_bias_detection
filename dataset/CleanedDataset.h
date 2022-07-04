@@ -3,6 +3,8 @@
 
 #include "Eigen/core"
 #include "DataRecord.h"
+#include "unordered_map"
+
 
 using namespace std;
 
@@ -10,7 +12,7 @@ class CleanedDataset {
 private:
     //Eigen::MatrixXf dataset;
     vector<DataRecord> dataset;
-    vector<string> classes;
+    unordered_map<string, vector<string>> classes;
 public:
     CleanedDataset();
     const Eigen::MatrixXf &getDataset();

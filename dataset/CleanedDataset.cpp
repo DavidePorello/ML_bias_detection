@@ -1,16 +1,16 @@
 #include "CleanedDataset.h"
 
 CleanedDataset::CleanedDataset() {
-    classes.emplace_back("gender");
+    classes.emplace("age", initVector<string>);
+    classes.emplace_back("education");
+    classes.emplace_back("marital stat");
     classes.emplace_back("race");
-    classes.emplace_back("family");
-    classes.emplace_back("random");
-    classes.emplace_back("blabla");
-    classes.emplace_back("agfg");
-    classes.emplace_back("asg");
-    classes.emplace_back("agafgfhgfg");
-    classes.emplace_back("agagsdfg");
-    classes.emplace_back("agagsddddddfg");
+    classes.emplace_back("hispanic origin");
+    classes.emplace_back("sex");
+    classes.emplace_back("reason for unemployment");
+    classes.emplace_back("full or part time employment stat");
+    classes.emplace_back("country of birth self");
+    classes.emplace_back("citizenship");
 }
 
 /*const Eigen::MatrixXf &CleanedDataset::getDataset() {
