@@ -13,7 +13,7 @@ void train_and_predict(MatrixXf &train, VectorXf &responses, const MatrixXf &sam
 double kl_divergence(const VectorXf &p, const VectorXf &q, bool unbiased=false);
 
 //Uncomment to try this main
-int main() {
+/*int main() {
     // simple test program
     const MatrixXf train {{1,2},{2.3,-3.9},{9,0.8},{8, -0.3}};
     const VectorXf resp {{1,-1,6,5}};
@@ -36,7 +36,7 @@ int main() {
     std::cout << "---- KL DIVERGENCE ----" << std::endl;
     std::cout << "linear -> polynomial: " << kl_divergence(predictions_lr, predictions_pr) << std::endl;
     std::cout << "polynomial -> linear: " << kl_divergence(predictions_pr, predictions_lr) << std::endl;
-}
+}*/
 
 /** Utility function to compute the standard deviation in place.
  *  @param p the array we want to compute the standard deviation
