@@ -21,7 +21,7 @@ include_directories(${sciplot_content_SOURCE_DIR})
 # include Eigen
 find_package (Eigen3 3.4 REQUIRED NO_MODULE)
 
-add_executable(${PROJECT_NAME} main.cpp dataset/Dataset.cpp dataset/Dataset.h dataset/RawDataRecord.cpp dataset/RawDataRecord.h bin/utilities.cpp
+add_executable(${PROJECT_NAME} main.cpp dataset/Dataset.cpp dataset/Dataset.h dataset/CleanedDataset.cpp dataset/CleanedDataset.h dataset/RawDataRecord.cpp dataset/RawDataRecord.h bin/utilities.cpp
          dataset/CleanedDataset.cpp dataset/CleanedDataset.h bin/BiasDetection.cpp bin/BiasDetection.h bin/ThreadPool.cpp bin/ThreadPool.h bin/AlternationTask.cpp bin/KFoldTask.cpp bin/Task.h bin/KFold.cpp bin/KFold.h
         bin/utilities.cpp bin/LinearRegression.h bin/LinearRegression.cpp
         bin/PolynomialRegression.h bin/PolynomialRegression.cpp bin/ModelML.h bin/plot_main.cpp bin/PlotML.h
