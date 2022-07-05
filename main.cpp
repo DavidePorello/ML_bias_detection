@@ -13,15 +13,15 @@
 
 /////////// CONFIG
 
-#define NUM_THREADS_ALTERNATION 8
-#define NUM_THREADS_KFOLD 10
+#define NUM_THREADS_ALTERNATION 1
+#define NUM_THREADS_KFOLD 1
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test */
-const string attribute = "gender";
+const string attribute = "race";
 const string label_name = "wage";
 /** How many different categorical values can the PBA have? */ //TODO possiamo prenderlo direttamente dal dataset?
-int attribute_num_categories = 2;
+int attribute_num_categories = 5;
 
 // TODO implement these options
 /** Do we parallelize the computation of the alternation function?
@@ -70,9 +70,9 @@ int main() {
     }
 
     vector<Eigen::MatrixXf> alt_preds; // each pred is a vector, containing the average of the predictions over all categories
-    int i = 0;
     for (future<vector<future<vector<float>>>> &p: alt_predictions_f) {
         Eigen::MatrixXf cur_preds(attribute_num_categories, NUM_FOLDS);
+        int i = 0;
         for (future<vector<float>> &p2: p.get()) {
             vector<float> pred = p2.get();
             cur_preds.col(i++) = Eigen::Map<Eigen::VectorXf>(pred.data(), attribute_num_categories);
@@ -82,7 +82,6 @@ int main() {
 
     // print plots
     process_results(d, plotter, true_preds, alt_preds, label_name);
-
 
     // ensure all spawned threads terminated before destroying their pools
     bd.join_threads();

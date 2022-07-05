@@ -54,7 +54,7 @@ void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
             d(i, attribute_index) = c1;
     }
 
-    AlternatedDataset result(move(dataset), t.getCategory1(), t.getCategory2());
+    AlternatedDataset result(move(d), t.getCategory1(), t.getCategory2());
     t.set_alternated_dataset(move(result));
 }
 
