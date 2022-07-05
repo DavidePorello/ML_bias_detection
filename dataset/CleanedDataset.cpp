@@ -4,14 +4,14 @@ CleanedDataset::CleanedDataset() {
     // Eigen::MatrixXf is automatically saved in heap, since the dataset can be quite large
     this->dataset = Eigen::MatrixXf{{0, 2, 3, 4, 5, 6, 7, 8, 9, 0},
                                     {1, 3, 3, 4, 5, 6, 7, 8, 9, 0},
-                                    {0, 4, 6, 4, 5, 6, 7, 8, 9, 0},
-                                    {0, 5, 3, 4, 5, 6, 7, 8, 9, 0},
-                                    {1, 6, 2, 4, 3, 2, 7, 8, 9, 0},
+                                    {0, 4, 6, 4, 5, 6, 7, 8, 9, 9},
+                                    {0, 5, 3, 2, 5, 6, 7, 8, 9, 0},
+                                    {1, 6, 2, 4, 3, 2, 7, 2, 3, 0},
                                     {1, 7, 4, 4, 5, 6, 7, 8, 9, 0},
                                     {0, 8, 3, 4, 5, 6, 1, 8, 9, 0},
-                                    {1, 9, 3, 4, 5, 6, 7, 8, 9, 0},
-                                    {0, 0, 3, 4, 5, 6, 7, 8, 9, 0},
-                                    {1, 2, 5, 4, 5, 7, 0, 8, 9, 0},
+                                    {1, 9, 3, 4, 5, 6, 7, 8, 9, 5},
+                                    {0, 0, 3, 4, 6, 6, 7, 8, 9, 0},
+                                    {1, 2, 5, 3, 5, 7, 0, 1, 8, 0},
                                     {1, 3, 3, 4, 5, 6, 7, 8, 9, 0},
                                     {1, 5, 3, 4, 5, 9, 7, 8, 9, 0}};
 }
@@ -39,7 +39,7 @@ vector<string> CleanedDataset::getClasses() {
 }
 
 Eigen::VectorXf CleanedDataset::getLabels() {
-    Eigen::VectorXf labels = Eigen::VectorXf::LinSpaced(10, 1000, 1010);
+    Eigen::VectorXf labels = Eigen::VectorXf::LinSpaced(12, 1000, 1011);
     return labels;
 }
 

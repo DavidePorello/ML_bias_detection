@@ -1,4 +1,5 @@
 #include <iostream>
+#include <numeric>
 #include "KFold.h"
 
 KFold::KFold(int num_folds, int num_threads,
@@ -46,32 +47,32 @@ vector<future<Eigen::VectorXf>> KFold::compute_predictions(const Eigen::MatrixXf
 }
 
 void KFold::run_model(KFoldTask &t) {
-    Eigen::VectorXf predictions;
-    Eigen::MatrixXf test;
-    Eigen::MatrixXf dataset = t.getDataset();
+    Eigen::VectorXf predictions, data_labels;
+    Eigen::MatrixXf test, data;
+    const Eigen::MatrixXf &dataset = t.getDataset();
     int num_records = dataset.rows();
-    int num_cols = dataset.cols();
     int test_fold_index = t.get_test_fold_index();
     int test_fold_start = get_fold_start_index(num_records, test_fold_index);
+    int test_fold_end = get_fold_start_index(num_records, test_fold_index + 1);
+    int test_fold_size = test_fold_end - test_fold_start;
+
+    // define vector of indices of the records in the dataset and test fold
+    vector<int> data_indices(num_records - test_fold_size);
+    iota(data_indices.begin(), data_indices.begin() + test_fold_start, 0);
+    iota(data_indices.begin() + test_fold_start, data_indices.end(), test_fold_end);
+    vector<int> test_indices(test_fold_end - test_fold_start);
+    iota(test_indices.begin(), test_indices.end(), test_fold_start);
 
     // pop test fold from dataset
-    if (test_fold_index != num_cols - 1) {
-        int test_fold_end = get_fold_start_index(num_records, test_fold_index + 1);
-        test = dataset.block(test_fold_start, 0, test_fold_end - test_fold_start, num_cols);
-        dataset.block(test_fold_start, 0, num_records - test_fold_end, num_cols) = dataset.block(
-                test_fold_end, 0, num_records - test_fold_end, num_cols);
-        dataset.conservativeResize(num_records - (test_fold_end - test_fold_start), num_cols);
-    } else {
-        test = dataset.block(test_fold_start, 0, num_records - test_fold_start, num_cols);
-        dataset.conservativeResize(num_records - (num_records - test_fold_start), num_cols);
-    }
+    data = dataset(data_indices, Eigen::all);
+    test = dataset(test_indices, Eigen::all);
+    data_labels = labels(data_indices);
 
-    /*TODO fix model assertion error
     // train the model
-    model.fit(dataset, labels);
+    model.fit(data, data_labels);
     // predict the values
     model.predict(test, predictions);
-*/
+
     t.set_predictions(predictions);
 }
 

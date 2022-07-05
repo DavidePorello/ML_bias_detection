@@ -66,6 +66,8 @@ int main() {
         for(future<Eigen::VectorXf>& p: v.get())
             cout << p.get();
     }
+    for(future<Eigen::VectorXf>& p: standard_predictions)
+        cout << p.get();
 
     // ensure all spawned threads terminated before destroying their pools
     bd.join_threads();
