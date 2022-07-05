@@ -1,11 +1,11 @@
 #include <iostream>
-#include "BiasDetection.h"
+#include "DatasetAlternator.h"
 
 using namespace std;
 
-BiasDetection::BiasDetection(const Eigen::MatrixXf &dataset, int &attribute,
-                             int &num_categories,
-                             const int &num_threads) : dataset(dataset),
+DatasetAlternator::DatasetAlternator(const Eigen::MatrixXf &dataset, int &attribute,
+                                     int &num_categories,
+                                     const int &num_threads) : dataset(dataset),
                                                        attribute_index(attribute),
                                                        num_categories(num_categories),
                                                        num_threads(num_threads) {
@@ -19,7 +19,7 @@ BiasDetection::BiasDetection(const Eigen::MatrixXf &dataset, int &attribute,
     pool = move(p);
 }
 
-vector<future<Eigen::MatrixXf>> BiasDetection::compute_bias(const int &parallelization_mode) {
+vector<future<Eigen::MatrixXf>> DatasetAlternator::run(const int &parallelization_mode) {
 
     vector<future<Eigen::MatrixXf>> alt_dataset_futures;
 
@@ -39,7 +39,7 @@ vector<future<Eigen::MatrixXf>> BiasDetection::compute_bias(const int &paralleli
 }
 
 
-void BiasDetection::compute_alternated_dataset(AlternationTask &t) {
+void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
     Eigen::MatrixXf d = dataset;
     auto c1 = static_cast<float>(t.getCategory1());
     auto c2 = static_cast<float>(t.getCategory2());
@@ -59,7 +59,7 @@ void BiasDetection::compute_alternated_dataset(AlternationTask &t) {
 /**
  * Join all threads spawned by this object
  */
-void BiasDetection::join_threads() {
+void DatasetAlternator::join_threads() {
     // signal the pool to stop (shouldn't be needed, just to make sure)
     AlternationTask stop_task(true);
     pool->enqueue(move(stop_task));

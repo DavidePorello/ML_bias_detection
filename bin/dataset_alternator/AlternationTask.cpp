@@ -1,4 +1,4 @@
-#include "Task.h"
+#include "../thread_pool/Task.h"
 
 AlternationTask::AlternationTask(bool stop_signal) :Task(stop_signal){
     this->category1 = -1;

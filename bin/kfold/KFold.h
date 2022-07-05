@@ -4,8 +4,8 @@
 #include <future>
 #include <vector>
 #include "Eigen/Core"
-#include "ThreadPool.h"
-#include "ModelML.h"
+#include "../thread_pool/ThreadPool.h"
+#include "../ml/ModelML.h"
 
 using namespace std;
 

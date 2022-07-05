@@ -38,49 +38,6 @@ double kl_divergence(const VectorXf &p, const VectorXf &q, bool unbiased=false);
     std::cout << "polynomial -> linear: " << kl_divergence(predictions_pr, predictions_lr) << std::endl;
 }*/
 
-/** Utility function to compute the standard deviation in place.
- *  @param p the array we want to compute the standard deviation
- *  @param mean the mean of p
- *  @param unbiased if true, we divide by N-1 instead of N to reduce bias
- *  (https://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation)
- *  */
-double stddev(const VectorXf &p, double mean, bool unbiased=false) {
-    float diff;
-    float sum = 0;
-    for(float i : p) {
-        // compute difference
-        diff = i - mean;
-        sum += diff*diff;
-    }
-    if (unbiased) {
-        // divide by N - 1
-        sum /= p.size()-1;
-    } else {
-        // divide by N
-        sum /= p.size();
-    }
-    // return square root
-    return std::sqrt(sum);
-}
-
-/** Computes the KL divergence (p||q)
- *  @param p is the array of predicted values
- *  @param q is the array of alternative predicted values
- *  @param unbiased if true, we divide by N-1 instead of N to reduce bias
- *  (https://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation)
- */
-double kl_divergence(const VectorXf &p, const VectorXf &q, bool unbiased) {
-    // compute mean and standard deviation
-    double mu_1 = p.mean();
-    double sigma_1 = stddev(p, mu_1, unbiased);
-    double mu_2 = q.mean();
-    double sigma_2 = stddev(q, mu_2, unbiased);
-    double diff = mu_1 - mu_2;
-    // now, compute the KL divergence
-    double kl = log(sigma_2/sigma_1) + ((sigma_1*sigma_1 + diff*diff)/(2*sigma_2*sigma_2)) - 0.5;
-    return kl;
-}
-
 /** A wrapper for ModelML train and predict functions.
  *  const version, if we require everything NOT to be changed.
  *  @param train is the training dataset

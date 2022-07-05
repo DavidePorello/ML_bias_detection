@@ -5,17 +5,21 @@
 
 #include "dataset/Dataset.h"
 #include "dataset/CleanedDataset.h"
-#include "bin/BiasDetection.h"
-#include "bin/KFold.h"
-#include "bin/ModelML.h"
-#include "bin/LinearRegression.h"
+#include "bin/dataset_alternator/DatasetAlternator.h"
+#include "bin/kfold/KFold.h"
+#include "bin/ml/ModelML.h"
+#include "bin/ml/LinearRegression.h"
+#include "bin/ml/PolynomialRegression.h"
 
 /////////// CONFIG
 
 #define NUM_THREADS_ALTERNATION 8
 #define NUM_THREADS_KFOLD 10
 #define NUM_FOLDS 10
+
+/** Indicate which PBA attribute to test */
 char attribute[20] = "gender";
+/** How many different categorical values can the PBA have? */ //TODO possiamo prenderlo direttamente dal dataset?
 int attribute_num_categories = 2;
 
 // TODO implement these options
@@ -26,18 +30,14 @@ int attribute_num_categories = 2;
  * */
 int alternation_parallelization_mode = 0;
 
-/** Define which model to use by uncommenting the desired model
- * @var LinearRegression
- * @var TODO complete with polynomial
- * */
-LinearRegression model;
-// PolynomialRegression model;
+/** Define which model to use by uncommenting the desired model */
+//LinearRegression model;
+PolynomialRegression model(2);
 ////////////////////////
 
 using namespace std;
 
-template<typename F>
-future<F> &&ready_future(F f);
+double kl_divergence(const Eigen::VectorXf &p, const Eigen::VectorXf &q, bool unbiased);
 
 int main() {
     CleanedDataset d;
@@ -46,12 +46,13 @@ int main() {
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
 
-    BiasDetection bd(m, attr_index, attribute_num_categories, NUM_THREADS_ALTERNATION);
+    // Initialize worker classes
+    DatasetAlternator bd(m, attr_index, attribute_num_categories, NUM_THREADS_ALTERNATION);
     KFold kfold(NUM_FOLDS, NUM_THREADS_KFOLD, labels, static_cast<ModelML &> (model));
 
 
     // compute the alternated datasets
-    vector<future<Eigen::MatrixXf>> alt_datasets = bd.compute_bias(alternation_parallelization_mode);
+    vector<future<Eigen::MatrixXf>> alt_datasets = bd.run(alternation_parallelization_mode);
 
     // train the model using kfold on the standard model and get the true predictions.
     vector<future<Eigen::VectorXf>> standard_predictions = kfold.compute_predictions(m);
@@ -61,13 +62,14 @@ int main() {
     for (future<Eigen::MatrixXf> &data : alt_datasets)
         alt_predictions.emplace_back(move(kfold.compute_predictions_async_pool(data)));
 
-    // TODO temp code to ensure results are not optimized and threads return. delete
+    // compute KL and produce plots
+    for(future<Eigen::VectorXf>& p: standard_predictions)
+        cout << p.get();
     for(future<vector<future<Eigen::VectorXf>>>& v : alt_predictions){
         for(future<Eigen::VectorXf>& p: v.get())
             cout << p.get();
     }
-    for(future<Eigen::VectorXf>& p: standard_predictions)
-        cout << p.get();
+
 
     // ensure all spawned threads terminated before destroying their pools
     bd.join_threads();
@@ -76,10 +78,45 @@ int main() {
     return 0;
 }
 
-template<typename F>
-future<F> &&ready_future(F f) {
-    promise<F> p;
-    p.set_value(f);
-    return move(p.get_future());
+/** Utility function to compute the standard deviation in place.
+ *  @param p the array we want to compute the standard deviation
+ *  @param mean the mean of p
+ *  @param unbiased if true, we divide by N-1 instead of N to reduce bias
+ *  (https://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation)
+ *  */
+double stddev(const Eigen::VectorXf &p, double mean, bool unbiased=false) {
+    float diff;
+    float sum = 0;
+    for(float i : p) {
+        // compute difference
+        diff = i - mean;
+        sum += diff*diff;
+    }
+    if (unbiased) {
+        // divide by N - 1
+        sum /= p.size()-1;
+    } else {
+        // divide by N
+        sum /= p.size();
+    }
+    // return square root
+    return std::sqrt(sum);
 }
 
+/** Computes the KL divergence (p||q)
+ *  @param p is the array of predicted values
+ *  @param q is the array of alternative predicted values
+ *  @param unbiased if true, we divide by N-1 instead of N to reduce bias
+ *  (https://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation)
+ */
+double kl_divergence(const Eigen::VectorXf &p, const Eigen::VectorXf &q, bool unbiased) {
+    // compute mean and standard deviation
+    double mu_1 = p.mean();
+    double sigma_1 = stddev(p, mu_1, unbiased);
+    double mu_2 = q.mean();
+    double sigma_2 = stddev(q, mu_2, unbiased);
+    double diff = mu_1 - mu_2;
+    // now, compute the KL divergence
+    double kl = log(sigma_2/sigma_1) + ((sigma_1*sigma_1 + diff*diff)/(2*sigma_2*sigma_2)) - 0.5;
+    return kl;
+}
