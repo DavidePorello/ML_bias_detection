@@ -1,7 +1,7 @@
 #ifndef SDP_PROJECT_CLEANEDDATASET_H
 #define SDP_PROJECT_CLEANEDDATASET_H
 
-#include "Eigen/core"
+#include "Eigen/Core"
 
 using namespace std;
 

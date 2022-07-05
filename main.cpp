@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "Eigen/core"
+#include "Eigen/Core"
 
 #include "dataset/Dataset.h"
 #include "dataset/CleanedDataset.h"
