@@ -81,9 +81,8 @@ double kl_divergence(const VectorXf &p, const VectorXf &q, bool unbiased) {
     return kl;
 }
 
-/** A wrapper for mlpack logistic regression train and predict functions.
+/** A wrapper for ModelML train and predict functions.
  *  const version, if we require everything NOT to be changed.
- *  It returns an arma::vec array of predicted values.
  *  @param train is the training dataset
  *  @param responses is the known value (one for each entry of the dataset)
  *  @param samples is the dataset we want to evaluate
@@ -97,9 +96,8 @@ void train_and_predict(const MatrixXf &train, const VectorXf &responses, const M
     // predict the values
     model.predict(samples, predictions);
 }
-/** A wrapper for mlpack logistic regression train and predict functions.
+/** A wrapper for ModelML train and predict functions.
  *  Here, we avoid copying by modifying the original version of data.
- *  It returns an arma::vec array of predicted values.
  *  @param train is the training dataset
  *  @param responses is the known value (one for each entry of the dataset)
  *  @param samples is the dataset we want to evaluate
