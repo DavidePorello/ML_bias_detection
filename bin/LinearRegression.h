@@ -1,15 +1,21 @@
 #ifndef SDP_PROJECT_LINEARREGRESSION_H
 #define SDP_PROJECT_LINEARREGRESSION_H
 
-#include <Eigen/core>
+#include <Eigen/Core>
 #include "ModelML.h"
 
 class LinearRegression: public ModelML{
     public:
-        //const arma::vec getParams();
-        //void setParams(arma::vec params);
-        void fit(const Eigen::MatrixXf &train, const Eigen::VectorXf &responses);
-        void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions);
+        LinearRegression();
+        void fit(Eigen::MatrixXf &train, Eigen::VectorXf &responses) override;
+        void fit(const Eigen::MatrixXf &train, const Eigen::VectorXf &responses) override;
+        void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions) override;
+        bool is_trained();
+    private:
+        Eigen::VectorXf _params;
+        float _intercept;
+        void _preprocess(Eigen::MatrixXf &train, Eigen::VectorXf &responses,
+                         Eigen::RowVectorXf &train_mean, float &resp_mean);
 };
 
 

@@ -3,13 +3,16 @@
 #ifndef SDP_PROJECT_MODELML_H
 #define SDP_PROJECT_MODELML_H
 
-#include <Eigen/core>
+#include <Eigen/Core>
 
 class ModelML {
     public:
-        Eigen::VectorXf getParams() const;
-        void setParams(const Eigen::VectorXf &params);
         /** This function is used to train a model.
+        *  @param train is a matrix having a row for each sample and a column for each feature
+        *  @param responses is a column vector storing the expected responses, one for each sample
+        * */
+        virtual void fit(Eigen::MatrixXf &train, Eigen::VectorXf &responses) = 0;
+        /** This function is used to train a model. const version.
         *  @param train is a matrix having a row for each sample and a column for each feature
         *  @param responses is a column vector storing the expected responses, one for each sample
         * */
@@ -19,8 +22,6 @@ class ModelML {
         *  @param predictions is a column vector which WILL store the computed responses, one for each sample
         * */
         virtual void predict(const Eigen::MatrixXf &samples, Eigen::VectorXf &predictions) = 0;
-    protected:
-        Eigen::VectorXf _params;
 };
 
 
