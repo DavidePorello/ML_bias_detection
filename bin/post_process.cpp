@@ -44,8 +44,15 @@ double kl_divergence(const Eigen::VectorXf &p, const Eigen::VectorXf &q, bool un
     return kl;
 }
 
-
-void process_results(const CleanedDataset& d, const PlotML& plotter, vector<vector<float>>& true_preds, vector<vector<float>>& alt_preds, const string& label_name){
+/**
+ * Functions that prints all plots, including computing the KL divergence
+ * @param d: CleanedDataset object
+ * @param plotter: PlotML object
+ * @param true_preds: matrix containing the predictions on the original dataset. Each row is relative to 1 categorical attribute (e.g. male), each row is relative to 1 fold
+ * @param alt_preds: vector of matrices, each relative to a different alternated dataset. Each matrix contains the predictions on the alternated dataset. Each row is relative to 1 categorical attribute (e.g. male), each row is relative to 1 fold
+ * @param label_name: the name of the evaluated PBA
+ */
+void process_results(const CleanedDataset& d, const PlotML& plotter, Eigen::MatrixXf& true_preds, vector<Eigen::MatrixXf>& alt_preds, const string& label_name){
 
     int attribute_num_categories = 2; //TODO replace with actual categories from dataset
     vector<string> categories{"male", "female"}; //TODO replace with actual categories from dataset
@@ -56,10 +63,8 @@ void process_results(const CleanedDataset& d, const PlotML& plotter, vector<vect
 
             const string attr1_name = categories[a1];
             const string attr2_name = categories[a2];
-            const Eigen::Map<Eigen::VectorXf> original_predictions(true_preds[a1].data(), attribute_num_categories);
-            const Eigen::Map<Eigen::VectorXf> alternated_predictions(alt_preds[a1].data(), attribute_num_categories);
 
-            plotter.alternation_plot(attr1_name, attr2_name, label_name, original_predictions, alternated_predictions);
+            plotter.alternation_plot(attr1_name, attr2_name, label_name, true_preds.row(a1), alt_preds[i].row(a2));
 
             // get indices of next attribute pair
             if (++a2 >= attribute_num_categories) {

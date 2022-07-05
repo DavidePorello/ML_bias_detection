@@ -3,11 +3,9 @@
 
 #include "Eigen/Core"
 
-#include "dataset/Dataset.h"
 #include "dataset/CleanedDataset.h"
 #include "bin/dataset_alternator/DatasetAlternator.h"
 #include "bin/kfold/KFold.h"
-#include "bin/ml/ModelML.h"
 #include "bin/ml/LinearRegression.h"
 #include "bin/ml/PolynomialRegression.h"
 #include "bin/plot/PlotML.h"
@@ -20,8 +18,8 @@
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test */
-string attribute = "gender";
-string label_name = "wage";
+const string attribute = "gender";
+const string label_name = "wage";
 /** How many different categorical values can the PBA have? */ //TODO possiamo prenderlo direttamente dal dataset?
 int attribute_num_categories = 2;
 
@@ -65,16 +63,21 @@ int main() {
         alt_predictions_f.emplace_back(move(kfold.compute_predictions_async_pool(data)));
 
     // fetch all results (go out of parallelization)
-    vector<vector<float>> true_preds;
-    for (future<vector<float>> &p: standard_predictions_f) {
-        true_preds.emplace_back(p.get());
+    Eigen::MatrixXf true_preds(attribute_num_categories, NUM_FOLDS);
+    for (int i=0; i<standard_predictions_f.size(); i++) {
+        vector<float> pred = standard_predictions_f[i].get();
+        true_preds.col(i) = Eigen::Map<Eigen::VectorXf>(pred.data(), attribute_num_categories);
     }
 
-    vector<vector<float>> alt_preds; // each pred is a vector, containing the average of the predictions over all categories
+    vector<Eigen::MatrixXf> alt_preds; // each pred is a vector, containing the average of the predictions over all categories
+    int i = 0;
     for (future<vector<future<vector<float>>>> &p: alt_predictions_f) {
+        Eigen::MatrixXf cur_preds(attribute_num_categories, NUM_FOLDS);
         for (future<vector<float>> &p2: p.get()) {
-            alt_preds.emplace_back(p2.get());
+            vector<float> pred = p2.get();
+            cur_preds.col(i++) = Eigen::Map<Eigen::VectorXf>(pred.data(), attribute_num_categories);
         }
+        alt_preds.emplace_back(cur_preds);
     }
 
     // print plots
