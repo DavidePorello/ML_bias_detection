@@ -14,7 +14,7 @@ public:
     const Eigen::MatrixXf &getDataset();
     std::vector<string> getClasses();
     Eigen::VectorXf getLabels();
-    int getAttributeIndex(const char *attribute);
+    int getAttributeIndex(const string attribute);
 };
 
 

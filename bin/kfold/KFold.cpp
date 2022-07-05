@@ -1,27 +1,30 @@
-#include <iostream>
 #include <numeric>
 #include "KFold.h"
 
 KFold::KFold(int num_folds, int num_threads,
-             const Eigen::VectorXf &labels, ModelML &model) : num_folds(num_folds),
-                                                              num_threads(num_threads),
-                                                              labels(labels),
-                                                              model(model) {}
+             const Eigen::VectorXf &labels, ModelML &model,
+             int num_categories, int attribute_index) : num_folds(num_folds),
+                                                        num_threads(num_threads),
+                                                        labels(labels),
+                                                        model(model),
+                                                        num_categories(num_categories),
+                                                        attribute_index(attribute_index) {}
 
 
-future<vector<future<Eigen::VectorXf>>> KFold::compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset) {
-    future<vector<future<Eigen::VectorXf>>> fut = async(launch::async,
-                                                        [this, &dataset]() -> vector<future<Eigen::VectorXf>> {
-                                                            Eigen::Matrix d = dataset.get();
+future<vector<future<vector<float>>>> KFold::compute_predictions_async_pool(future<AlternatedDataset> &dataset) {
+    future<vector<future<vector<float>>>> fut = async(launch::async,
+                                                        [this, &dataset]() -> vector<future<vector<float>>> {
+                                                            AlternatedDataset d = dataset.get();
                                                             return compute_predictions(d);
                                                         });
     return move(fut);
 }
 
-vector<future<Eigen::VectorXf>> KFold::compute_predictions(const Eigen::MatrixXf &dataset) {
+vector<future<vector<float>>> KFold::compute_predictions(const AlternatedDataset &dataset) {
 
-    vector<future<Eigen::VectorXf>> predictions;
+    vector<future<vector<float>>> predictions;
 
+    // TODO move thread pool creation in constructor (only 1 thread pool for all predictions)
     // create thread pool
     function<void(KFoldTask &&)> kfold_func = [this](KFoldTask &&t) -> void {
         this->run_model(t);
@@ -49,7 +52,7 @@ vector<future<Eigen::VectorXf>> KFold::compute_predictions(const Eigen::MatrixXf
 void KFold::run_model(KFoldTask &t) {
     Eigen::VectorXf predictions, data_labels;
     Eigen::MatrixXf test, data;
-    const Eigen::MatrixXf &dataset = t.getDataset();
+    const Eigen::MatrixXf &dataset = t.getDataset().dataset;
     int num_records = dataset.rows();
     int test_fold_index = t.get_test_fold_index();
     int test_fold_start = get_fold_start_index(num_records, test_fold_index);
@@ -73,7 +76,18 @@ void KFold::run_model(KFoldTask &t) {
     // predict the values
     model.predict(test, predictions);
 
-    t.set_predictions(predictions);
+    // extract predictions relative to all categories and compute their means
+    vector<float> sums(num_categories, 0), counts(num_categories, 0);
+    for (int i = 0; i < test_fold_size; i++) {
+        int category  = static_cast<int>(round(test(i,attribute_index)));
+        sums[category] += predictions(i);
+        counts[category]++;
+    }
+    for (int i = 0; i < num_categories; i++)
+        if(counts[i]>0)
+            sums[i] /= counts[i];
+
+    t.set_predictions(sums);
 }
 
 int KFold::get_fold_start_index(int num_records, int fold_index) const {
@@ -84,7 +98,7 @@ int KFold::get_fold_start_index(int num_records, int fold_index) const {
  * Join all threads spawned by this object
  */
 void KFold::join_threads() {
-    for (unique_ptr<ThreadPool<KFoldTask>> &pool : pools) {
+    for (unique_ptr<ThreadPool<KFoldTask>> &pool: pools) {
         // signal the pool to stop (shouldn't be needed, just to make sure)
         KFoldTask stop_task(true);
         pool->enqueue(move(stop_task));

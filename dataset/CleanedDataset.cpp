@@ -43,7 +43,7 @@ Eigen::VectorXf CleanedDataset::getLabels() {
     return labels;
 }
 
-int CleanedDataset::getAttributeIndex(const char *attribute) {
+int CleanedDataset::getAttributeIndex(const string attribute) {
     for (int i = 0; i < classes.size(); i++)
         if (classes[i] == attribute)
             return i;

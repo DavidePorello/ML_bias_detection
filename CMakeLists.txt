@@ -25,6 +25,6 @@ add_executable(${PROJECT_NAME} main.cpp dataset/Dataset.cpp dataset/Dataset.h da
          dataset/CleanedDataset.cpp dataset/CleanedDataset.h bin/dataset_alternator/DatasetAlternator.cpp bin/dataset_alternator/DatasetAlternator.h bin/thread_pool/ThreadPool.cpp bin/thread_pool/ThreadPool.h bin/dataset_alternator/AlternationTask.cpp bin/kfold/KFoldTask.cpp bin/thread_pool/Task.h bin/kfold/KFold.cpp bin/kfold/KFold.h
         bin/ml/utilities.cpp bin/ml/LinearRegression.h bin/ml/LinearRegression.cpp
         bin/ml/PolynomialRegression.h bin/ml/PolynomialRegression.cpp bin/ml/ModelML.h bin/plot/plot_main.cpp bin/plot/PlotML.h
-        bin/plot/PlotML.cpp) #The name of the cpp file and its path can vary
+        bin/plot/PlotML.cpp bin/post_process.cpp bin/post_process.h bin/data_types.h bin/dataset_alternator/AlternationTask.h bin/kfold/KFoldTask.h) #The name of the cpp file and its path can vary
 
 target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)

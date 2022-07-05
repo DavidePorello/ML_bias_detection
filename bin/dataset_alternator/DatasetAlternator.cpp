@@ -1,5 +1,6 @@
 #include <iostream>
 #include "DatasetAlternator.h"
+#include "../data_types.h"
 
 using namespace std;
 
@@ -19,15 +20,15 @@ DatasetAlternator::DatasetAlternator(const Eigen::MatrixXf &dataset, int &attrib
     pool = move(p);
 }
 
-vector<future<Eigen::MatrixXf>> DatasetAlternator::run(const int &parallelization_mode) {
+vector<future<AlternatedDataset>> DatasetAlternator::run(const int &parallelization_mode) {
 
-    vector<future<Eigen::MatrixXf>> alt_dataset_futures;
+    vector<future<AlternatedDataset>> alt_dataset_futures;
 
     // train and predict on the alternated dataset
     for (int i = 0; i < num_categories; i++)
         for (int j = i + 1; j < num_categories; j++) {
             AlternationTask alternated_task(i, j);
-            alt_dataset_futures.emplace_back(alternated_task.get_future());
+            alt_dataset_futures.emplace_back(move(alternated_task.get_future()));
             pool->enqueue(move(alternated_task));
         }
 
@@ -53,7 +54,8 @@ void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
             d(i, attribute_index) = c1;
     }
 
-    t.set_alternated_dataset(d);
+    AlternatedDataset result(move(dataset), t.getCategory1(), t.getCategory2());
+    t.set_alternated_dataset(move(result));
 }
 
 /**

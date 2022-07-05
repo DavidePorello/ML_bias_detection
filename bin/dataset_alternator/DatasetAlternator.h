@@ -4,6 +4,7 @@
 #include <future>
 #include "Eigen/Core"
 #include "../thread_pool/ThreadPool.h"
+#include "AlternationTask.h"
 
 
 using namespace std;
@@ -13,7 +14,7 @@ public:
     DatasetAlternator(const Eigen::MatrixXf &dataset, int &attribute, int &num_categories,
                       const int &num_threads);
 
-    vector<future<Eigen::MatrixXf>> run(const int &parallelization_mode);
+    vector<future<AlternatedDataset>> run(const int &parallelization_mode);
 
     void join_threads();
 private:
