@@ -3,16 +3,15 @@
 
 #include <vector>
 #include <string>
+#include "Attribute.h"
 
 using namespace std;
 
 class RawDataRecord {
 private:
     vector<string> raw_data;
-    vector<int> indexes;
 public:
-    explicit RawDataRecord(const string& line);
-    bool isPrunable();
+    RawDataRecord(const string& line, vector<Attribute> attributes);
     vector<string> getRawData();
 };
 

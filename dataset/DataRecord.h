@@ -7,8 +7,10 @@ using namespace std;
 
 class DataRecord {
 private:
-    //Eigen::VectorXf data;
+    Eigen::VectorXf data;
 public:
+    DataRecord();
+    Eigen::VectorXf getData();
 };
 
 

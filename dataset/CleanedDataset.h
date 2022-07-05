@@ -3,23 +3,21 @@
 
 #include "Eigen/core"
 #include "DataRecord.h"
-#include "unordered_map"
-
+#include "Attribute.h"
+#include "Dataset.h"
 
 using namespace std;
 
 class CleanedDataset {
 private:
-    //Eigen::MatrixXf dataset;
-    vector<DataRecord> dataset;
-    unordered_map<string, vector<string>> classes;
+    Eigen::MatrixXf dataset;
+    vector<Attribute> attributes;
 public:
-    CleanedDataset();
+    explicit CleanedDataset(Dataset& d);
     const Eigen::MatrixXf &getDataset();
-    std::vector<string> getClasses();
-    int getAttributeIndex(const char *attribute);
+    vector<string> getAttributes();
+    int getAttributeIndex(const string& attribute);
+    string getAttribute(int i);
 };
-
-
 
 #endif //SDP_PROJECT_CLEANEDDATASET_H
