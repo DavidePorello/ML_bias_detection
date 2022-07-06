@@ -1,3 +1,5 @@
+// TODO do we keep this class, or remove it in final delivery?
+
 #include <Eigen/Core>
 #include <iostream>
 #include "ModelML.h"

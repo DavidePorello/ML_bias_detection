@@ -23,7 +23,7 @@ const string label_name = "wage";
 /** How many different categorical values can the PBA have? */ //TODO possiamo prenderlo direttamente dal dataset?
 int attribute_num_categories = 5;
 
-// TODO implement these options
+// TODO do we implement these options?
 /** Do we parallelize the computation of the alternation function?
  * @var 0 -> no parallelization (compute sequentially)
  * @var 1 -> use a thread pool

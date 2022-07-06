@@ -121,7 +121,7 @@ int KFold::get_fold_start_index(int num_records, int fold_index) const {
 
 /**
  * Function to process the predictions and condense them to just the means and standard deviation for each category
- * @param test: the test fold. each row is a records, each column an attribute
+ * @param test: the test fold. Each row is a record, each column an attribute
  * @param predictions: the prediction for each record in the test fold (in the same order)
  * @return matrix of shape (NUM_CATEGORIES x 2):
  *      <ul>

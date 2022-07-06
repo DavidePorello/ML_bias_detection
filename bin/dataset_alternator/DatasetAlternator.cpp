@@ -3,6 +3,13 @@
 
 using namespace std;
 
+/**
+ * Handles the alternation function cuncurrently, using num_threads inside a thread pool
+ * @param dataset: the dataset on which to run the ML model. Each row is a record, each column an attribute
+ * @param attribute: index of the attribute (PBA) to alternate
+ * @param num_categories: number of categories of the alternated attribute (e.g. attribute gender has 2 categories -> male, female)
+ * @param num_threads: number of threads to use for the parallel computation
+ */
 DatasetAlternator::DatasetAlternator(const Eigen::MatrixXf &dataset, int &attribute,
                                      int &num_categories,
                                      const int &num_threads) : dataset(dataset),
@@ -19,11 +26,17 @@ DatasetAlternator::DatasetAlternator(const Eigen::MatrixXf &dataset, int &attrib
     pool = move(p);
 }
 
+// TODO remove parallelization_mode?
+/**
+ * Cuncurrently generate all alternated datasets
+ * @param parallelization_mode
+ * @return a vector of futures, each containing an alternated dataset
+ */
 vector<future<Eigen::MatrixXf>> DatasetAlternator::run(const int &parallelization_mode) {
 
     vector<future<Eigen::MatrixXf>> alt_dataset_futures;
 
-    // train and predict on the alternated dataset
+    // for each alternated dataset to compute, define a task and insert it in the thread pool
     for (int i = 0; i < num_categories; i++)
         for (int j = i + 1; j < num_categories; j++) {
             AlternationTask alternated_task(i, j);
@@ -38,7 +51,10 @@ vector<future<Eigen::MatrixXf>> DatasetAlternator::run(const int &parallelizatio
     return alt_dataset_futures;
 }
 
-
+/**
+ * Given a task, compute the alternation function and return the alternated dataset through t.promise_database
+ * @param t
+ */
 void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
     Eigen::MatrixXf d = dataset;
     auto c1 = static_cast<float>(t.getCategory1());

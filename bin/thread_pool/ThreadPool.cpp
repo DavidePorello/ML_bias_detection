@@ -8,6 +8,7 @@ ThreadPool<T>::ThreadPool(const function<void(T)> &task_func, int num_threads, c
     this->task_func = task_func;
     terminate = false;
     int i;
+    assert(num_threads > 0);
     for (i = 0; i < num_threads; i++) {
         threads.emplace_back(thread([this]() -> void { thread_func(); }));
         if (run_threads_detached)
