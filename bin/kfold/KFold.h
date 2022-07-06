@@ -34,7 +34,7 @@ private:
 
     [[nodiscard]] int get_fold_start_index(int num_records, int fold_index) const;
 
-    Eigen::MatrixXf process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions, int test_fold_size) const;
+    Eigen::MatrixXf process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions) const;
 };
 
 float stddev(const Eigen::VectorXf &p, float mean, bool unbiased=false);

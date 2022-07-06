@@ -70,7 +70,7 @@ void KFold::run_model(KFoldTask &t) {
     model.predict(test, predictions);
     // extract predictions relative to all categories and compute their means
 
-    Eigen::MatrixXf results = move(process_results(test, predictions, test_fold_size));
+    Eigen::MatrixXf results = move(process_results(test, predictions));
 
     t.set_predictions(move(results));
 }
@@ -79,12 +79,19 @@ int KFold::get_fold_start_index(int num_records, int fold_index) const {
     return fold_index * (num_records / num_folds) + min(fold_index, num_records % num_folds);
 }
 
+
+/**
+ * Function to process the predictions and condense them to just the means and standard deviation for each category
+ * @param test: the test fold. each row is a records, each column an attribute
+ * @param predictions: the prediction for each record in the test fold (in the same order)
+ * @return matrix. Each row is relative to 1 categorical value (male, female). Column 0 contains the means of the predictions for that category, Column 1 contains their standard deviation
+ */
 Eigen::MatrixXf
-KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions, int test_fold_size) const {
+KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions) const {
     int i;
     vector<vector<float>> cat_preds(
             num_categories); // vector. each element is a vector containing all predictions relative to 1 category
-    for (i = 0; i < test_fold_size; i++) {
+    for (i = 0; i < test.rows(); i++) {
         int category = static_cast<int>(round(test(i, attribute_index)));
         cat_preds[category].emplace_back(predictions(i));
     }
