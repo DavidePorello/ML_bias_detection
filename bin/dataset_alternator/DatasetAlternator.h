@@ -14,7 +14,7 @@ public:
     DatasetAlternator(const Eigen::MatrixXf &dataset, int &attribute, int &num_categories,
                       const int &num_threads);
 
-    vector<future<AlternatedDataset>> run(const int &parallelization_mode);
+    vector<future<Eigen::MatrixXf>> run(const int &parallelization_mode);
 
     void join_threads();
 private:

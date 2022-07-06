@@ -8,7 +8,7 @@ KFoldTask::KFoldTask() : Task() {
     this->test_fold_index = 0;
 }
 
-KFoldTask::KFoldTask(AlternatedDataset dataset, int test_fold_index) : Task() {
+KFoldTask::KFoldTask(Eigen::MatrixXf dataset, int test_fold_index) : Task() {
     this->dataset = move(dataset);
     this->test_fold_index = test_fold_index;
 }
@@ -17,7 +17,7 @@ const int &KFoldTask::get_test_fold_index() const {
     return test_fold_index;
 }
 
-AlternatedDataset &KFoldTask::getDataset(){
+Eigen::MatrixXf &KFoldTask::getDataset(){
     return ref(dataset);
 }
 

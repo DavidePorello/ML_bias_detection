@@ -12,16 +12,16 @@ KFold::KFold(int num_folds, int num_threads,
                                                         attribute_index(attribute_index) {}
 
 
-future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(future<AlternatedDataset> &dataset) {
+future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset) {
     future<vector<future<Eigen::MatrixXf>>> fut = async(launch::async,
                                                         [this, &dataset]() -> vector<future<Eigen::MatrixXf>> {
-                                                            AlternatedDataset d = dataset.get();
+                                                            Eigen::MatrixXf d = dataset.get();
                                                             return compute_predictions(d);
                                                         });
     return move(fut);
 }
 
-vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const AlternatedDataset &dataset) {
+vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const Eigen::MatrixXf &dataset) {
 
     vector<future<Eigen::MatrixXf>> predictions;
 
@@ -53,7 +53,7 @@ vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const AlternatedDatas
 void KFold::run_model(KFoldTask &t) {
     Eigen::VectorXf predictions, data_labels;
     Eigen::MatrixXf test, data;
-    const Eigen::MatrixXf &dataset = t.getDataset().dataset;
+    const Eigen::MatrixXf &dataset = t.getDataset();
     int num_records = dataset.rows();
     int test_fold_index = t.get_test_fold_index();
     int test_fold_start = get_fold_start_index(num_records, test_fold_index);
@@ -143,10 +143,10 @@ float stddev(const Eigen::VectorXf &p, float mean, bool unbiased) {
     }
     if (unbiased) {
         // divide by N - 1
-        sum /= p.size() - 1;
+        sum /= static_cast<float>(p.size()) - 1;
     } else {
         // divide by N
-        sum /= p.size();
+        sum /= static_cast<float>(p.size());
     }
     // return square root
     return std::sqrt(sum);

@@ -7,7 +7,6 @@
 #include "../thread_pool/ThreadPool.h"
 #include "../ml/ModelML.h"
 #include "KFoldTask.h"
-#include "../data_types.h"
 
 using namespace std;
 
@@ -16,9 +15,9 @@ public:
     KFold(int num_folds, int num_threads, const Eigen::VectorXf &labels, ModelML &model, int num_categories,
           int attribute_index);
 
-    future<vector<future<Eigen::MatrixXf>>> compute_predictions_async_pool(future<AlternatedDataset> &dataset);
+    future<vector<future<Eigen::MatrixXf>>> compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset);
 
-    vector<future<Eigen::MatrixXf>> compute_predictions(const AlternatedDataset &dataset);
+    vector<future<Eigen::MatrixXf>> compute_predictions(const Eigen::MatrixXf &dataset);
 
     void join_threads();
 

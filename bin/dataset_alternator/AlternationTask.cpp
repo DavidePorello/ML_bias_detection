@@ -27,11 +27,11 @@ bool AlternationTask::to_be_alternated() const {
     return (category1 > 0 && category2 > 0);
 }
 
-future<AlternatedDataset> AlternationTask::get_future(){
+future<Eigen::MatrixXf> AlternationTask::get_future(){
     return promise_database.get_future();
 }
 
-void AlternationTask::set_alternated_dataset(AlternatedDataset alt_dataset){
+void AlternationTask::set_alternated_dataset(Eigen::MatrixXf alt_dataset){
     promise_database.set_value(alt_dataset);
 }
 

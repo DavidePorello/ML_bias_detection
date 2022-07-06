@@ -51,15 +51,14 @@ int main() {
     PlotML plotter(NUM_FOLDS);
 
     // compute the alternated datasets
-    vector<future<AlternatedDataset>> alt_datasets = bd.run(alternation_parallelization_mode);
+    vector<future<Eigen::MatrixXf>> alt_datasets = bd.run(alternation_parallelization_mode);
 
     // train the model using kfold on the standard model and get the true predictions.
-    AlternatedDataset standard_dataset(m, -1, -1);
-    vector<future<Eigen::MatrixXf>> standard_predictions_f = kfold.compute_predictions(standard_dataset);
+    vector<future<Eigen::MatrixXf>> standard_predictions_f = kfold.compute_predictions(m);
 
     // train and predict on the alternated datasets
     vector<future<vector<future<Eigen::MatrixXf>>>> alt_predictions_f;
-    for (future<AlternatedDataset> &data: alt_datasets)
+    for (future<Eigen::MatrixXf> &data: alt_datasets)
         alt_predictions_f.emplace_back(move(kfold.compute_predictions_async_pool(data)));
 
     ////////////////////////////////////
