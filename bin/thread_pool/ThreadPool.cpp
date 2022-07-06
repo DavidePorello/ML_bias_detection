@@ -4,7 +4,7 @@
 #include "../kfold/KFoldTask.h"
 
 template<typename T>
-ThreadPool<T>::ThreadPool(const function<void(T)> &task_func, int num_threads, const bool run_threads_detached) {
+ThreadPool<T>::ThreadPool(const function<void(T)> &task_func, int num_threads, bool run_threads_detached) {
     this->task_func = task_func;
     terminate = false;
     int i;

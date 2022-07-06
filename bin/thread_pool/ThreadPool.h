@@ -10,19 +10,22 @@
 
 using namespace std;
 
-/** thread pool. Type T must implement interface Task
- * */
+/**
+ * Generic thread pool. Jobs are defined by the task class T. The worker threads run a constant function f(T)
+ * @tparam T: class of the tasks to be processed by the thread pool. it must implement interface Task
+ */
 template<typename T>
 class ThreadPool {
 public:
     /**
-     * generate a new thread pool. T must be a class implementing the interface Task
+     * generate a new thread pool.
      * @param task_func: all threads will run this function to process the task
-     * @param num_threads: number og threads to create in the pool
+     * @param num_threads: number of threads to create in the pool
      * @param run_threads_detached: if true, detach threads as soon as they are created,
      *          else you need to call ThreadPool::join_threads() to join them when the tasks are finished
+     * @tparam T: class of the tasks to be processed by the thread pool. it must implement interface Task
      */
-    ThreadPool(const function<void(T)> &task_func, int num_threads, const bool run_threads_detached);
+    ThreadPool(const function<void(T)> &task_func, int num_threads, bool run_threads_detached=false);
 
     /**
      * Put a new task in queue
