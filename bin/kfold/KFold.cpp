@@ -2,6 +2,15 @@
 #include <iostream>
 #include "KFold.h"
 
+/**
+ * Class in charge of computing the K-fold predictions on a dataset, using num_threads inside a thread pool
+ * @param num_folds: number of folds for the K-folds
+ * @param num_threads: number of threads to use for the parallel computation
+ * @param labels: vector of the label values (wage, e.g. 1020.50)
+ * @param model: ML model class
+ * @param num_categories: number of categories of the alternated attribute (e.g. attribute gender has 2 categories -> male, female)
+ * @param attribute_index: index of the attribute (i.e. in the dataset, the values for the alternated attribute are on column <attribute_index>)
+ */
 KFold::KFold(int num_folds, int num_threads,
              const Eigen::VectorXf &labels, ModelML &model,
              int num_categories, int attribute_index) : num_folds(num_folds),
@@ -18,7 +27,11 @@ KFold::KFold(int num_folds, int num_threads,
 
 }
 
-
+/**
+ * Wrapper function which just waits for the dataset to be computed, then runs KFold::compute_predictions()
+ * @param dataset: a future containing the dataset to compute the predictions on.
+ * @return a future containing the result of KFold::compute_predictions()
+ */
 future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset) {
     future<vector<future<Eigen::MatrixXf>>> fut = async(launch::async,
                                                         [this, &dataset]() -> vector<future<Eigen::MatrixXf>> {
@@ -28,6 +41,16 @@ future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(fu
     return move(fut);
 }
 
+/**
+ * Insert NUM_FOLDS tasks in the thread pool, each running run_model()
+ * @param dataset: the dataset on which to run the ML model
+ * @return a vector of futures, each containing the processed predictions as a matrix of shape (NUM_CATEGORIES x 2):
+ *      <ul>
+ *          <li> Each row is relative to 1 categorical value (male, female).
+ *          <li> Column 0 contains the means of the predictions for that category,
+ *          <li> Column 1 contains their standard deviation
+ *      </ul>
+ */
 vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const Eigen::MatrixXf &dataset) {
 
     vector<future<Eigen::MatrixXf>> predictions;
@@ -42,6 +65,16 @@ vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const Eigen::MatrixXf
     return predictions;
 }
 
+/**
+ * Extract the test fold from the dataset, then run the ML model to get a set of predictions.
+ * The predictions are processed and returned inside t.promise_predictions as a matrix of shape (NUM_CATEGORIES x 2):
+ *      <ul>
+ *          <li> Each row is relative to 1 categorical value (male, female).
+ *          <li> Column 0 contains the means of the predictions for that category,
+ *          <li> Column 1 contains their standard deviation
+ *      </ul>
+ * @param t: KFoldTask containing the index of the fold to process
+ */
 void KFold::run_model(KFoldTask &t) {
     Eigen::VectorXf predictions, data_labels;
     Eigen::MatrixXf test, data;
@@ -75,6 +108,12 @@ void KFold::run_model(KFoldTask &t) {
     t.set_predictions(move(results));
 }
 
+/**
+ * get the index of the first record of a fold. It uses a mathematical formula, so it doesn't throw Segmentation Fault if the index falls outside the dataset
+ * @param num_records: number of records in the dataset
+ * @param fold_index: index of the fold, starting from zero
+ * @return index of the first record of a fold
+ */
 int KFold::get_fold_start_index(int num_records, int fold_index) const {
     return fold_index * (num_records / num_folds) + min(fold_index, num_records % num_folds);
 }
@@ -84,7 +123,12 @@ int KFold::get_fold_start_index(int num_records, int fold_index) const {
  * Function to process the predictions and condense them to just the means and standard deviation for each category
  * @param test: the test fold. each row is a records, each column an attribute
  * @param predictions: the prediction for each record in the test fold (in the same order)
- * @return matrix. Each row is relative to 1 categorical value (male, female). Column 0 contains the means of the predictions for that category, Column 1 contains their standard deviation
+ * @return matrix of shape (NUM_CATEGORIES x 2):
+ *      <ul>
+ *          <li> Each row is relative to 1 categorical value (male, female).
+ *          <li> Column 0 contains the means of the predictions for that category,
+ *          <li> Column 1 contains their standard deviation
+ *      </ul>
  */
 Eigen::MatrixXf
 KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions) const {
