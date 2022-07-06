@@ -38,4 +38,5 @@ cmake-build-debug
 #database
 dataset/census-income.test
 dataset/census-income.data
-dataset/cleaned-dataset.data
+dataset/cleaned-dataset.txt
+dataset/labels.txt

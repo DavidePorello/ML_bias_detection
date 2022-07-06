@@ -10,9 +10,11 @@ using namespace std;
 class RawDataRecord {
 private:
     vector<string> raw_data;
+    string label;
 public:
     RawDataRecord(const string& line, vector<Attribute> attributes);
     vector<string> getRawData();
+    string getLabel();
 };
 
 

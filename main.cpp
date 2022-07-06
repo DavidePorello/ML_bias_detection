@@ -1,17 +1,18 @@
 #include <iostream>
 #include "dataset/Dataset.h"
 #include "dataset/CleanedDataset.h"
+#include "dataset/Attribute.h"
 
 using namespace std;
 
 int main() {
 
-    Dataset d;
-    cout << "Raw dataset: " << d.getLength() << endl << d.getRecord(0).size() << endl;
-    int i = 0;
-    for(string& str : d.getRecord(0)) {
-        cout << d.getAttribute(i) << ": " << str << endl;
-        i++;
+    CleanedDataset c;
+    for(int i = 0 ; i < 10; i++) {
+        for (int j = 0; j < c.getDataset().cols(); j++)
+            cout << c.getDataset()(i, j) << " ";
+        cout << c.getLabels()(i);
+        cout << endl;
     }
 
     return 0;

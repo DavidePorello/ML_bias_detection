@@ -19,7 +19,7 @@ RawDataRecord::RawDataRecord(const string &line, vector<Attribute> attributes) {
         pos = word.find_first_not_of(' ');
         word = word.substr(pos != string::npos ? pos : 0);
 
-        if(word == "Not in universe" || word == "?") {
+        if(word == "Not in universe" || word == "?" || word == "NA") {
             index++;
             continue;
         }
@@ -34,6 +34,8 @@ RawDataRecord::RawDataRecord(const string &line, vector<Attribute> attributes) {
                 } else
                     this->raw_data.push_back(word);
             }
+            if(index == 24)
+                this->label = word;
         }
         index++;
     }
@@ -41,4 +43,8 @@ RawDataRecord::RawDataRecord(const string &line, vector<Attribute> attributes) {
 
 vector<string> RawDataRecord::getRawData() {
     return raw_data;
+}
+
+string RawDataRecord::getLabel() {
+    return label;
 }
