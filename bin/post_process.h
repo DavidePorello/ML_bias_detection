@@ -9,6 +9,6 @@
 
 using namespace std;
 
-void process_results(const CleanedDataset& d, const PlotML& plotter, Eigen::MatrixXf& true_preds, vector<Eigen::MatrixXf>& alt_preds, const string& label_name);
+void process_results(const CleanedDataset& d, const PlotML& plotter, Eigen::MatrixXf& true_means, Eigen::MatrixXf& true_stddevs, vector<Eigen::MatrixXf>& alt_means, vector<Eigen::MatrixXf>& alt_stddevs, const string& label_name);
 
 #endif //SDP_PROJECT_POST_PROCESS_H

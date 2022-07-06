@@ -21,11 +21,11 @@ AlternatedDataset &KFoldTask::getDataset(){
     return ref(dataset);
 }
 
-future<vector<float>> KFoldTask::get_future() {
+future<Eigen::MatrixXf> KFoldTask::get_future() {
     return promise_predictions.get_future();
 }
 
-void KFoldTask::set_predictions(vector<float> preds) {
+void KFoldTask::set_predictions(Eigen::MatrixXf preds) {
     promise_predictions.set_value(move(preds));
 }
 

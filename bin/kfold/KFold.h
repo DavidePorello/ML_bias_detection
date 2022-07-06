@@ -16,9 +16,9 @@ public:
     KFold(int num_folds, int num_threads, const Eigen::VectorXf &labels, ModelML &model, int num_categories,
           int attribute_index);
 
-    future<vector<future<vector<float>>>> compute_predictions_async_pool(future<AlternatedDataset> &dataset);
+    future<vector<future<Eigen::MatrixXf>>> compute_predictions_async_pool(future<AlternatedDataset> &dataset);
 
-    vector<future<vector<float>>> compute_predictions(const AlternatedDataset &dataset);
+    vector<future<Eigen::MatrixXf>> compute_predictions(const AlternatedDataset &dataset);
 
     void join_threads();
 
@@ -34,7 +34,9 @@ private:
     void run_model(KFoldTask &t);
 
     [[nodiscard]] int get_fold_start_index(int num_records, int fold_index) const;
+
 };
 
+float stddev(const Eigen::VectorXf &p, float mean, bool unbiased=false);
 
 #endif //SDP_PROJECT_KFOLD_H

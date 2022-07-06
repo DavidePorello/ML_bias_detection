@@ -55,33 +55,44 @@ int main() {
 
     // train the model using kfold on the standard model and get the true predictions.
     AlternatedDataset standard_dataset(m, -1, -1);
-    vector<future<vector<float>>> standard_predictions_f = kfold.compute_predictions(standard_dataset);
+    vector<future<Eigen::MatrixXf>> standard_predictions_f = kfold.compute_predictions(standard_dataset);
 
     // train and predict on the alternated datasets
-    vector<future<vector<future<vector<float>>>>> alt_predictions_f;
+    vector<future<vector<future<Eigen::MatrixXf>>>> alt_predictions_f;
     for (future<AlternatedDataset> &data: alt_datasets)
         alt_predictions_f.emplace_back(move(kfold.compute_predictions_async_pool(data)));
 
-    // fetch all results (go out of parallelization)
-    Eigen::MatrixXf true_preds(attribute_num_categories, NUM_FOLDS);
+    ////////////////////////////////////
+    /// collect all results (go out of parallelization) and post process
+    ////////////////////////////////////
+
+    //collect results of predictions on the true dataset
+    Eigen::MatrixXf true_means(attribute_num_categories, NUM_FOLDS); // matrix of prediction means for each category and fold
+    Eigen::MatrixXf true_stddevs(attribute_num_categories, NUM_FOLDS); // matrix of prediction standard deviations for each category and fold
     for (int i=0; i<standard_predictions_f.size(); i++) {
-        vector<float> pred = standard_predictions_f[i].get();
-        true_preds.col(i) = Eigen::Map<Eigen::VectorXf>(pred.data(), attribute_num_categories);
+        Eigen::MatrixXf pred = standard_predictions_f[i].get();
+        true_means.col(i) = pred.col(0);
+        true_stddevs.col(i) = pred.col(1);
     }
 
-    vector<Eigen::MatrixXf> alt_preds; // each pred is a vector, containing the average of the predictions over all categories
-    for (future<vector<future<vector<float>>>> &p: alt_predictions_f) {
-        Eigen::MatrixXf cur_preds(attribute_num_categories, NUM_FOLDS);
+    // collect results of alternated predictions
+    vector<Eigen::MatrixXf> alt_means; // each pred is a vector, containing the average of the predictions over each category and fold
+    vector<Eigen::MatrixXf> alt_stddevs; // each pred is a vector, containing the standard deviation of the predictions over each category and fold
+    for (future<vector<future<Eigen::MatrixXf>>> &p: alt_predictions_f) {
+        Eigen::MatrixXf cur_means(attribute_num_categories, NUM_FOLDS);
+        Eigen::MatrixXf cur_stddevs(attribute_num_categories, NUM_FOLDS);
         int i = 0;
-        for (future<vector<float>> &p2: p.get()) {
-            vector<float> pred = p2.get();
-            cur_preds.col(i++) = Eigen::Map<Eigen::VectorXf>(pred.data(), attribute_num_categories);
+        for (future<Eigen::MatrixXf> &p2: p.get()) {
+            Eigen::MatrixXf pred = p2.get();
+            cur_means.col(i) = pred.col(0);
+            cur_stddevs.col(i++) = pred.col(0);
         }
-        alt_preds.emplace_back(cur_preds);
+        alt_means.emplace_back(cur_means);
+        alt_stddevs.emplace_back(cur_stddevs);
     }
 
     // print plots
-    process_results(d, plotter, true_preds, alt_preds, label_name);
+    process_results(d, plotter, true_means, true_stddevs, alt_means, alt_stddevs, label_name);
 
     // ensure all spawned threads terminated before destroying their pools
     bd.join_threads();

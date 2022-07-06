@@ -11,7 +11,7 @@ class KFoldTask : public Task {
 private:
     int test_fold_index;
     AlternatedDataset dataset;
-    promise<vector<float>> promise_predictions;
+    promise<Eigen::MatrixXf> promise_predictions;
 public:
     KFoldTask();
 
@@ -23,9 +23,9 @@ public:
 
     AlternatedDataset &getDataset();
 
-    future<vector<float>> get_future();
+    future<Eigen::MatrixXf> get_future();
 
-    void set_predictions(vector<float> preds);
+    void set_predictions(Eigen::MatrixXf preds);
 };
 
 #endif //SDP_PROJECT_KFOLDTASK_H
