@@ -51,7 +51,6 @@ vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const AlternatedDatas
 }
 
 void KFold::run_model(KFoldTask &t) {
-    int i;
     Eigen::VectorXf predictions, data_labels;
     Eigen::MatrixXf test, data;
     const Eigen::MatrixXf &dataset = t.getDataset().dataset;
@@ -78,18 +77,18 @@ void KFold::run_model(KFoldTask &t) {
     // predict the values
     model.predict(test, predictions);
     // extract predictions relative to all categories and compute their means
-    /*TODO delete
-    vector<float> sums(num_categories, 0), counts(num_categories, 0);
-    for (int i = 0; i < test_fold_size; i++) {
-        int category  = static_cast<int>(round(test(i,attribute_index)));
-        sums[category] += predictions(i);
-        counts[category]++;
-    }
-    for (int i = 0; i < num_categories; i++)
-        if(counts[i]>0)
-            sums[i] /= counts[i];*/
 
-    //TODO transfer processing to different func
+    Eigen::MatrixXf results = move(process_results(test, predictions, test_fold_size));
+
+    t.set_predictions(move(results));
+}
+
+int KFold::get_fold_start_index(int num_records, int fold_index) const {
+    return fold_index * (num_records / num_folds) + min(fold_index, num_records % num_folds);
+}
+
+Eigen::MatrixXf KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions, int test_fold_size) const{
+    int i;
     vector<vector<float>> cat_preds(
             num_categories); // vector. each element is a vector containing all predictions relative to 1 category
     for (i = 0; i < test_fold_size; i++) {
@@ -111,11 +110,7 @@ void KFold::run_model(KFoldTask &t) {
             results(i, 0) = results(i, 0) = 0;
     }
 
-    t.set_predictions(results);
-}
-
-int KFold::get_fold_start_index(int num_records, int fold_index) const {
-    return fold_index * (num_records / num_folds) + min(fold_index, num_records % num_folds);
+    return move(results);
 }
 
 /**
