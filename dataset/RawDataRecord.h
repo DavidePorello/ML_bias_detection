@@ -3,14 +3,18 @@
 
 #include <vector>
 #include <string>
+#include "Attribute.h"
 
 using namespace std;
 
 class RawDataRecord {
+private:
+    vector<string> raw_data;
+    string label;
 public:
-    vector<string> raw_data; // TODO make private
-    explicit RawDataRecord(const string& line);
-    bool is_prunable();
+    RawDataRecord(const string& line, vector<Attribute> attributes);
+    vector<string> getRawData();
+    string getLabel();
 };
 
 

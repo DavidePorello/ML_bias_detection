@@ -1,21 +1,26 @@
 #ifndef SDP_PROJECT_CLEANEDDATASET_H
 #define SDP_PROJECT_CLEANEDDATASET_H
 
-#include "Eigen/Core"
+#include "Eigen/core"
+#include "Attribute.h"
+#include "Dataset.h"
 
 using namespace std;
 
 class CleanedDataset {
 private:
     Eigen::MatrixXf dataset;
-    vector<string> classes;
+    Eigen::VectorXf labels;
+    vector<Attribute> attributes;
+    void LoadFiles(const char *pathDB, const char *pathL, vector<Attribute>& classes);
 public:
-    CleanedDataset();
+    explicit CleanedDataset();
     const Eigen::MatrixXf &getDataset();
-    std::vector<string> getClasses();
     Eigen::VectorXf getLabels();
-    int getAttributeIndex(const string attribute);
+    vector<string> getAttributes();
+    int getAttributeIndex(const string& attribute);
+    string getAttribute(int i);
+    int getNumberOfValues(int i);
 };
-
 
 #endif //SDP_PROJECT_CLEANEDDATASET_H

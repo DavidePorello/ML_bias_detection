@@ -35,4 +35,11 @@
 .idea
 cmake-build-debug
 
+# Database
+dataset/census-income.test
+dataset/census-income.data
+dataset/cleaned-dataset.txt
+dataset/labels.txt
+
+# Plots
 plots/*
