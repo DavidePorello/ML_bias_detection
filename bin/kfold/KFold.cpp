@@ -9,7 +9,14 @@ KFold::KFold(int num_folds, int num_threads,
                                                         labels(labels),
                                                         model(model),
                                                         num_categories(num_categories),
-                                                        attribute_index(attribute_index) {}
+                                                        attribute_index(attribute_index) {
+    // create thread pool
+    function<void(KFoldTask &&)> kfold_func = [this](KFoldTask &&t) -> void {
+        this->run_model(t);
+    };
+    this->pool = make_unique<ThreadPool<KFoldTask>>(kfold_func, this->num_threads, false);
+
+}
 
 
 future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset) {
@@ -25,27 +32,12 @@ vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const Eigen::MatrixXf
 
     vector<future<Eigen::MatrixXf>> predictions;
 
-    // TODO move thread pool creation in constructor (only 1 thread pool for all predictions)
-    // create thread pool
-    function<void(KFoldTask &&)> kfold_func = [this](KFoldTask &&t) -> void {
-        this->run_model(t);
-    };
-    unique_ptr<ThreadPool<KFoldTask>> pool = make_unique<ThreadPool<KFoldTask>>(kfold_func, this->num_threads, false);
-
     // train and predict on the alternated dataset
     for (int i = 0; i < num_folds; i++) {
         KFoldTask task(dataset, i);
         predictions.emplace_back(task.get_future());
         pool->enqueue(move(task));
     }
-
-
-    // signal the pool to stop after all previous tasks are completed
-    KFoldTask stop_task(true);
-    pool->enqueue(move(stop_task));
-
-    // save the thread pool in the kfold object (else, it would be destroyed at the end of the func and threads wouldn't be able to access the queue anymore)
-    pools.emplace_back(move(pool));
 
     return predictions;
 }
@@ -87,7 +79,8 @@ int KFold::get_fold_start_index(int num_records, int fold_index) const {
     return fold_index * (num_records / num_folds) + min(fold_index, num_records % num_folds);
 }
 
-Eigen::MatrixXf KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions, int test_fold_size) const{
+Eigen::MatrixXf
+KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions, int test_fold_size) const {
     int i;
     vector<vector<float>> cat_preds(
             num_categories); // vector. each element is a vector containing all predictions relative to 1 category
@@ -117,14 +110,12 @@ Eigen::MatrixXf KFold::process_results(const Eigen::MatrixXf &test, const Eigen:
  * Join all threads spawned by this object
  */
 void KFold::join_threads() {
-    for (unique_ptr<ThreadPool<KFoldTask>> &pool: pools) {
-        // signal the pool to stop (shouldn't be needed, just to make sure)
-        KFoldTask stop_task(true);
-        pool->enqueue(move(stop_task));
+    // signal the pool to stop
+    KFoldTask stop_task(true);
+    pool->enqueue(move(stop_task));
 
-        //join threads
-        pool->join_threads();
-    }
+    //join threads
+    pool->join_threads();
 }
 
 /** Utility function to compute the standard deviation in place.

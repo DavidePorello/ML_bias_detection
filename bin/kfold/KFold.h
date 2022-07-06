@@ -28,7 +28,7 @@ private:
     ModelML &model;
     int attribute_index;
     int num_categories;
-    vector<unique_ptr<ThreadPool<KFoldTask>>> pools;
+    unique_ptr<ThreadPool<KFoldTask>> pool;
 
     void run_model(KFoldTask &t);
 
