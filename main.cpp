@@ -13,8 +13,8 @@
 
 /////////// CONFIG
 
-#define NUM_THREADS_ALTERNATION 1
-#define NUM_THREADS_KFOLD 1
+#define NUM_THREADS_ALTERNATION 8
+#define NUM_THREADS_KFOLD 8
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test */
