@@ -10,7 +10,7 @@ The [_Census-Income Data Set_](https://archive.ics.uci.edu/ml/machine-learning-d
 In order to build and use this project is necessary to download and install it
 
 - ##### Windows
-    Requires [CMake](https://cmake.org/download/) and Visual Studio.
+    Requires [CMake](https://cmake.org/download/) and Visual Studio (with C++ building tools).
   1. Download Eigen from [Eigen website](https://eigen.tuxfamily.org/index.php?title=Main_Page)
   2. Extract Eigen in `C:/eigen`
   3. Create the subdirectory `C:/eigen/build`
@@ -36,7 +36,7 @@ However, in order to work, it requires `gnuplot`.
   1. Download `gp543-win64-mingw.exe` from [here](https://sourceforge.net/projects/gnuplot/files/gnuplot/5.4.3/)
   2. Run the executable
   3. Remember to check the option "_**Add application directory to your PATH environment variable**_"
-  4. If your IDE was already open, close and re-open it, to refresh the PATH vaiable content  
+  4. If your IDE was already open, close and re-open it, to refresh the PATH variable content  
 
 - ##### Linux
     install gnuplot with `sudo apt install gnuplot`
