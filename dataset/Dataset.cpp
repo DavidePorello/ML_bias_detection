@@ -9,8 +9,7 @@ Dataset::Dataset(vector<Attribute>& classes) {
     this->raw_dataset = this->LoadFile("dataset/census-income.data");
     vector<RawDataRecord> train = this->LoadFile("dataset/census-income.test");
     this->raw_dataset.insert(this->raw_dataset.end(), train.begin(), train.end());
-    this->WriteDataset("dataset/cleaned-dataset.txt");
-    this->WriteLabels("dataset/labels.txt");
+    this->WriteFile("dataset/cleaned-dataset.txt");
 }
 
 vector<RawDataRecord> Dataset::LoadFile(const char *path) {
@@ -31,7 +30,7 @@ vector<RawDataRecord> Dataset::LoadFile(const char *path) {
     return dataset;
 }
 
-void Dataset::WriteDataset(const char *path) {
+void Dataset::WriteFile(const char *path) {
     int i, j;
     ofstream matrix;
     matrix.open (path, ios::out | ios::trunc);
@@ -55,23 +54,9 @@ void Dataset::WriteDataset(const char *path) {
                 matrix << r.getRawData()[i] << " ";
             i++;
         }
-        matrix << -1 << " ";
+        matrix << r.getLabel() << " ";
     }
     matrix.close();
-}
-
-void Dataset::WriteLabels(const char *path) {
-    int i, j;
-    ofstream label;
-    label.open (path, ios::out | ios::trunc);
-    if(!label.is_open()) {
-        cout << "Could not open file " << path << endl;
-        exit(-1);
-    }
-    for(RawDataRecord& r : this->raw_dataset) {
-        label << r.getLabel() << " ";
-    }
-    label.close();
 }
 
 int Dataset::getLength() {

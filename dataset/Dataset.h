@@ -13,8 +13,7 @@ private:
     vector<float> labels;
     vector<Attribute> attributes;
     vector<RawDataRecord> LoadFile(const char *path);
-    void WriteDataset(const char *path);
-    void WriteLabels(const char *path);
+    void WriteFile(const char *path);
 public:
     explicit Dataset(vector<Attribute>& classes);
     int getLength();

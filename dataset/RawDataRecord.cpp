@@ -19,11 +19,6 @@ RawDataRecord::RawDataRecord(const string &line, vector<Attribute> attributes) {
         pos = word.find_first_not_of(' ');
         word = word.substr(pos != string::npos ? pos : 0);
 
-        if(word == "Not in universe" || word == "?" || word == "NA") {
-            index++;
-            continue;
-        }
-
         // add to string vector
         for(Attribute& a: attributes) {
             if(a.getIndex() == index) {

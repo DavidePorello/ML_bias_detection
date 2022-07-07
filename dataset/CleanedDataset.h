@@ -12,7 +12,7 @@ private:
     Eigen::MatrixXf dataset;
     Eigen::VectorXf labels;
     vector<Attribute> attributes;
-    void LoadFiles(const char *pathDB, const char *pathL, vector<Attribute>& classes);
+    void LoadFile(const char *path, vector<Attribute>& classes);
 public:
     explicit CleanedDataset();
     const Eigen::MatrixXf &getDataset();
