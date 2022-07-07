@@ -10,6 +10,7 @@
 #include "bin/ml/PolynomialRegression.h"
 #include "bin/plot/PlotML.h"
 #include "bin/post_process.h"
+#include "bin/data_types.h"
 
 /////////// CONFIG
 
@@ -24,8 +25,8 @@ const string attribute = "sex";
 const string label_name = "wage";
 
 /** Define which model to use by uncommenting the desired model */
-//LinearRegression model;
-PolynomialRegression model(2);
+LinearRegression model;
+//PolynomialRegression model(2);
 ////////////////////////
 
 using namespace std;
@@ -35,21 +36,15 @@ int main() {
     cout << "Loading dataset..." << endl;
     CleanedDataset d;
     Eigen::MatrixXf m = d.getDataset();
-    cout << m.rows() << endl;
     vector<string> classes = d.getAttributes();
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
     int attribute_num_categories = d.getNumberOfValues(attr_index);
 
     // TODO remove dataset shrinker
-    //m.conservativeResize(50, 10);
-    //labels.conservativeResize(50);
-
-    //cout << m<<endl;
-    //cout << labels<<endl;
-
-    //cout << labels << endl; // TODO remove
-    cout << endl << endl << endl;
+    /*
+    m.conservativeResize(50, 10);
+    labels.conservativeResize(50);*/
 
     // Initialize worker classes
     DatasetAlternator bd(m, attr_index, attribute_num_categories, NUM_THREADS_ALTERNATION);
@@ -60,14 +55,15 @@ int main() {
     cout << "Starting parallel computations..." << endl;
 
     // compute the alternated datasets
-    vector<future<Eigen::MatrixXf>> alt_datasets = bd.run();
+    vector<future<AlternatedMatrix>> alt_datasets = bd.run();
 
     // train the model using kfold on the standard model and get the true predictions.
-    vector<future<Eigen::MatrixXf>> standard_predictions_f = kfold.compute_predictions(m);
+    AlternatedMatrix dataset(m, -1, -1);
+    vector<future<Eigen::MatrixXf>> standard_predictions_f = kfold.compute_predictions(dataset);
 
     // train and predict on the alternated datasets
     vector<future<vector<future<Eigen::MatrixXf>>>> alt_predictions_f;
-    for (future<Eigen::MatrixXf> &data: alt_datasets)
+    for (future<AlternatedMatrix> &data: alt_datasets)
         alt_predictions_f.emplace_back(move(kfold.compute_predictions_async_pool(data)));
 
     ////////////////////////////////////
@@ -96,7 +92,7 @@ int main() {
         for (future<Eigen::MatrixXf> &p2: p.get()) {
             Eigen::MatrixXf pred = p2.get();
             cur_means.col(i) = pred.col(0);
-            cur_stddevs.col(i++) = pred.col(0);
+            cur_stddevs.col(i++) = pred.col(1);
         }
         alt_means.emplace_back(cur_means);
         alt_stddevs.emplace_back(cur_stddevs);

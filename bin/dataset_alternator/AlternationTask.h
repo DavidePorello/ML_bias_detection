@@ -4,6 +4,7 @@
 #include "Eigen/Core"
 #include <future>
 #include "../thread_pool/Task.h"
+#include "../data_types.h"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ class AlternationTask : public Task {
 private:
     int category1;
     int category2;
-    promise<Eigen::MatrixXf> promise_database;
+    promise<AlternatedMatrix> promise_database;
 public:
     AlternationTask();
 
@@ -25,9 +26,9 @@ public:
 
     [[maybe_unused]] bool to_be_alternated() const;
 
-    future<Eigen::MatrixXf> get_future();
+    future<AlternatedMatrix> get_future();
 
-    void set_alternated_dataset(Eigen::MatrixXf alt_dataset);
+    void set_alternated_dataset(AlternatedMatrix alt_dataset);
 };
 
 #endif //SDP_PROJECT_ALTERNATIONTASK_H
