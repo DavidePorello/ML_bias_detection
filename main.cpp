@@ -17,17 +17,11 @@
 #define NUM_THREADS_KFOLD 8
 #define NUM_FOLDS 10
 
-/** Indicate which PBA attribute to test */
-const string attribute = "gender";
-const string label_name = "wage";
+/** Indicate which PBA attribute to test (i.e. "sex" or "race")*/
+const string attribute = "sex";
 
-// TODO do we implement these options?
-/** Do we parallelize the computation of the alternation function?
- * @var 0 -> no parallelization (compute sequentially)
- * @var 1 -> use a thread pool
- * @var 2 -> use 1 async function for each alternation function
- * */
-int alternation_parallelization_mode = 0;
+/** Disaply name for the prediction values */
+const string label_name = "wage";
 
 /** Define which model to use by uncommenting the desired model */
 //LinearRegression model;
@@ -55,7 +49,7 @@ int main() {
     cout << "Starting parallel computations..." << endl;
 
     // compute the alternated datasets
-    vector<future<Eigen::MatrixXf>> alt_datasets = bd.run(alternation_parallelization_mode);
+    vector<future<Eigen::MatrixXf>> alt_datasets = bd.run();
 
     // train the model using kfold on the standard model and get the true predictions.
     vector<future<Eigen::MatrixXf>> standard_predictions_f = kfold.compute_predictions(m);

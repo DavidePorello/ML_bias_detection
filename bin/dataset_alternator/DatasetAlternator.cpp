@@ -26,13 +26,11 @@ DatasetAlternator::DatasetAlternator(const Eigen::MatrixXf &dataset, int &attrib
     pool = move(p);
 }
 
-// TODO remove parallelization_mode?
 /**
  * Cuncurrently generate all alternated datasets
- * @param parallelization_mode
  * @return a vector of futures, each containing an alternated dataset
  */
-vector<future<Eigen::MatrixXf>> DatasetAlternator::run(const int &parallelization_mode) {
+vector<future<Eigen::MatrixXf>> DatasetAlternator::run() {
 
     vector<future<Eigen::MatrixXf>> alt_dataset_futures;
 
