@@ -41,4 +41,5 @@ dataset/cleaned-dataset.txt
 dataset/labels.txt
 
 # Plots
-plots/*
+plots/alternation*
+plots/bias_evaluation*
