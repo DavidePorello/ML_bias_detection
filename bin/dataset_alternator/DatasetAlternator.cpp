@@ -57,7 +57,7 @@ void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
     Eigen::MatrixXf d = dataset;
     auto c1 = static_cast<float>(t.getCategory1());
     auto c2 = static_cast<float>(t.getCategory2());
-/*TODO disabled alternation
+
     // alternation
     for (int i = 0; i < d.rows(); i++) {
         // if attribute has value c1 or c2, assign it to the other. since they are floats, we can't use normal equivalence ==
@@ -66,7 +66,7 @@ void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
         else if (abs(d(i, attribute_index) - c2) < 0.05)
             d(i, attribute_index) = c1;
     }
-*/
+
     AlternatedMatrix result(move(d), t.getCategory1(), t.getCategory2());
     t.set_alternated_dataset(move(result));
 }

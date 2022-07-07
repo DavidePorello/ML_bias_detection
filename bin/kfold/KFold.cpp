@@ -54,7 +54,7 @@ vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const AlternatedMatri
 
     vector<future<Eigen::MatrixXf>> predictions;
 
-    // train and predict on the alternated dataset
+    // add tasks to thread pool queue
     for (int i = 0; i < num_folds; i++) {
         KFoldTask task(dataset, i);
         predictions.emplace_back(task.get_future());
@@ -78,7 +78,7 @@ void KFold::run_model(KFoldTask &t) {
     int i, j;
     Eigen::VectorXf predictions;
     Eigen::MatrixXf test;
-    Eigen::MatrixXf &dataset = t.getDataset().dataset;
+    const Eigen::MatrixXf dataset = t.getDataset().dataset; // we need to create a local copy, else it doesn't work with cuncurrency
     int num_records = dataset.rows();
     int num_cols = dataset.cols();
     int test_fold_index = t.get_test_fold_index();
@@ -128,7 +128,7 @@ void KFold::run_model(KFoldTask &t) {
     }
 
     //TODO remove
-    if (test_fold_index == 0) {
+    if (test_fold_index == 3) {
         /*
         for (i = 0; i < test.rows(); i++) {
             int category = static_cast<int>(round(test(i, attribute_index)));
