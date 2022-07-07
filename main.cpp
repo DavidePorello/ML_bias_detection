@@ -18,10 +18,8 @@
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test */
-const string attribute = "race";
+const string attribute = "gender";
 const string label_name = "wage";
-/** How many different categorical values can the PBA have? */ //TODO possiamo prenderlo direttamente dal dataset?
-int attribute_num_categories = 5;
 
 // TODO do we implement these options?
 /** Do we parallelize the computation of the alternation function?
@@ -39,16 +37,22 @@ PolynomialRegression model(2);
 using namespace std;
 
 int main() {
+
+    cout << "Loading dataset..." << endl;
     CleanedDataset d;
     const Eigen::MatrixXf m = d.getDataset();
-    vector<string> classes = d.getClasses();
+    vector<string> classes = d.getAttributes();
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
+    int attribute_num_categories = d.getNumberOfValues(attr_index);
 
     // Initialize worker classes
     DatasetAlternator bd(m, attr_index, attribute_num_categories, NUM_THREADS_ALTERNATION);
-    KFold kfold(NUM_FOLDS, NUM_THREADS_KFOLD, labels, static_cast<ModelML &> (model), attribute_num_categories, attr_index);
+    KFold kfold(NUM_FOLDS, NUM_THREADS_KFOLD, labels, static_cast<ModelML &> (model), attribute_num_categories,
+                attr_index);
     PlotML plotter(NUM_FOLDS);
+
+    cout << "Starting parallel computations..." << endl;
 
     // compute the alternated datasets
     vector<future<Eigen::MatrixXf>> alt_datasets = bd.run(alternation_parallelization_mode);
@@ -66,13 +70,16 @@ int main() {
     ////////////////////////////////////
 
     //collect results of predictions on the true dataset
-    Eigen::MatrixXf true_means(attribute_num_categories, NUM_FOLDS); // matrix of prediction means for each category and fold
-    Eigen::MatrixXf true_stddevs(attribute_num_categories, NUM_FOLDS); // matrix of prediction standard deviations for each category and fold
-    for (int i=0; i<standard_predictions_f.size(); i++) {
+    Eigen::MatrixXf true_means(attribute_num_categories,
+                               NUM_FOLDS); // matrix of prediction means for each category and fold
+    Eigen::MatrixXf true_stddevs(attribute_num_categories,
+                                 NUM_FOLDS); // matrix of prediction standard deviations for each category and fold
+    for (int i = 0; i < standard_predictions_f.size(); i++) {
         Eigen::MatrixXf pred = standard_predictions_f[i].get();
         true_means.col(i) = pred.col(0);
         true_stddevs.col(i) = pred.col(1);
     }
+    cout << "Collected standard prediction" << endl << endl;
 
     // collect results of alternated predictions
     vector<Eigen::MatrixXf> alt_means; // each pred is a vector, containing the average of the predictions over each category and fold
@@ -88,10 +95,13 @@ int main() {
         }
         alt_means.emplace_back(cur_means);
         alt_stddevs.emplace_back(cur_stddevs);
+        cout << "\rCollected alternated prediction " << alt_means.size() << "/" << alt_predictions_f.size();
     }
+    for(auto& i:alt_means) cout <<endl<< i << endl; // TODO remove
 
     // print plots
-    process_results(d, plotter, true_means, true_stddevs, alt_means, alt_stddevs, label_name);
+    cout << endl << "Printing plots..." << endl;
+    process_results(d, plotter, true_means, true_stddevs, alt_means, alt_stddevs, label_name, attr_index);
 
     // ensure all spawned threads terminated before destroying their pools
     bd.join_threads();

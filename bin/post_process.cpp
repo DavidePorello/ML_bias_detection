@@ -28,12 +28,13 @@ double kl_divergence(float mu_1, float sigma_1, float mu_2, float sigma_2) {
  * @param true_stddevs: matrix containing the standard deviations of the the predictions on the original dataset. Each row is relative to 1 categorical attribute (e.g. male), each row is relative to 1 fold
  * @param alt_means: vector of matrices, each relative to a different alternated dataset. Each matrix contains the means of the predictions on the alternated dataset. Each row is relative to 1 categorical attribute (e.g. male), each row is relative to 1 fold
  * @param alt_stddevs: vector of matrices, each relative to a different alternated dataset. Each matrix contains the standard deviations of the predictions on the alternated dataset. Each row is relative to 1 categorical attribute (e.g. male), each row is relative to 1 fold
- * @param label_name: the name of the evaluated PBA
+ * @param label_name: the name of predction label (wage)
+ * @param attr_index: the index of the PBA attribute
  */
-void process_results(const CleanedDataset& d, const PlotML& plotter, Eigen::MatrixXf& true_means, Eigen::MatrixXf& true_stddevs, vector<Eigen::MatrixXf>& alt_means, vector<Eigen::MatrixXf>& alt_stddevs, const string& label_name){
+void process_results(const CleanedDataset& d, const PlotML& plotter, Eigen::MatrixXf& true_means, Eigen::MatrixXf& true_stddevs, vector<Eigen::MatrixXf>& alt_means, vector<Eigen::MatrixXf>& alt_stddevs, const string& label_name, int attr_index){
 
-    int attribute_num_categories = 2; //TODO replace with actual categories from dataset
-    vector<string> categories{"male", "female"}; //TODO replace with actual categories from dataset
+    int attribute_num_categories = d.getNumberOfValues(attr_index);
+    vector<string> categories = d.getAttributes();
     int num_folds = true_means.cols();
 
     for(int a1 = 0, i = 0; a1 < attribute_num_categories-1 ; a1++)
