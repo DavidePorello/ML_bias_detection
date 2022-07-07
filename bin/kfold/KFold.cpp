@@ -102,6 +102,11 @@ void KFold::run_model(KFoldTask &t) {
     // predict the values
     model.predict(test, predictions);
 
+    if (test_fold_index == 4) {
+        //cout << predictions << endl;
+        cout << predictions << endl;
+    }
+
     // extract predictions relative to all categories and compute their means
     Eigen::MatrixXf results = move(process_results(test, predictions));
 

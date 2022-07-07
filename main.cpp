@@ -20,12 +20,12 @@
 /** Indicate which PBA attribute to test (i.e. "sex" or "race")*/
 const string attribute = "sex";
 
-/** Disaply name for the prediction values */
+/** Display name for the prediction values */
 const string label_name = "wage";
 
 /** Define which model to use by uncommenting the desired model */
-//LinearRegression model;
-PolynomialRegression model(2);
+LinearRegression model;
+//PolynomialRegression model(2);
 ////////////////////////
 
 using namespace std;
@@ -41,8 +41,11 @@ int main() {
     int attribute_num_categories = d.getNumberOfValues(attr_index);
 
     // TODO remove dataset shrinker
-    /*m.conservativeResize(500, 10);
-    labels.conservativeResize(500);*/
+    m.conservativeResize(50, 10);
+    labels.conservativeResize(50);
+
+    cout << m<<endl;
+    cout << labels<<endl;
 
     //cout << labels << endl; // TODO remove
     for(int k=0; k< labels.size(); k++)
