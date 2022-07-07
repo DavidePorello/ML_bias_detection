@@ -78,7 +78,7 @@ void KFold::run_model(KFoldTask &t) {
     int i, j;
     Eigen::VectorXf predictions;
     Eigen::MatrixXf test;
-    Eigen::MatrixXf &dataset = t.getDataset().dataset;
+    Eigen::MatrixXf dataset = t.getDataset().dataset;
     int num_records = dataset.rows();
     int num_cols = dataset.cols();
     int test_fold_index = t.get_test_fold_index();
