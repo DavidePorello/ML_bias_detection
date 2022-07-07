@@ -21,6 +21,7 @@ public:
     int getAttributeIndex(const string& attribute);
     [[maybe_unused]] string getAttribute(int i);
     [[nodiscard]] int getNumberOfValues(int i) const;
+    const vector<string>& getCategories(int i) const;
 };
 
 #endif //SDP_PROJECT_CLEANEDDATASET_H

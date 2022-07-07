@@ -17,6 +17,6 @@ int Attribute::getIndex() {
     return this->index;
 }
 
-vector<string> Attribute::getValues() const {
+const vector<string>& Attribute::getValues() const {
     return this->values;
 }

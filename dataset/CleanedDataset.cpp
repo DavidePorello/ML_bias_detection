@@ -104,3 +104,7 @@ int CleanedDataset::getAttributeIndex(const string& attribute) {
 int CleanedDataset::getNumberOfValues(int i) const {
     return this->attributes[i].getValues().size();
 }
+
+const vector<string>& CleanedDataset::getCategories(int i) const {
+    return this->attributes[i].getValues();
+}

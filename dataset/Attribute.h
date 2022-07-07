@@ -16,7 +16,7 @@ public:
     void addValues(vector<string> values);
     string getName() const;
     int getIndex();
-    vector<string> getValues() const;
+    const vector<string>& getValues() const;
 };
 
 #endif //SDP_PROJECT_ATTRIBUTE_H

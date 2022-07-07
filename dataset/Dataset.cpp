@@ -45,7 +45,7 @@ void Dataset::WriteDataset(const char *path) {
         for(Attribute& a : this->attributes) {
             if(a.getValues().size() != 0) {
                 j = 0;
-                for(string& str : a.getValues()) {
+                for(const string& str : a.getValues()) {
                     if (r.getRawData()[i] == str)
                         matrix << j << " ";
                     j++;

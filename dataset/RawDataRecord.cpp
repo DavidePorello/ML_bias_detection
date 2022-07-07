@@ -28,7 +28,7 @@ RawDataRecord::RawDataRecord(const string &line, vector<Attribute> attributes) {
         for(Attribute& a: attributes) {
             if(a.getIndex() == index) {
                 if(a.getValues().size() != 0) {
-                    for(string& str : a.getValues())
+                    for(const string& str : a.getValues())
                         if(word == str)
                             this->raw_data.push_back(word);
                 } else
