@@ -14,9 +14,9 @@ private:
 public:
     Attribute(string name, int index);
     void addValues(vector<string> values);
-    string getName();
+    string getName() const;
     int getIndex();
-    vector<string> getValues();
+    vector<string> getValues() const;
 };
 
 #endif //SDP_PROJECT_ATTRIBUTE_H

@@ -9,7 +9,7 @@ void Attribute::addValues(vector<string> values) {
     this->values.assign(values.begin(), values.end());
 }
 
-string Attribute::getName() {
+string Attribute::getName() const{
     return this->name;
 }
 
@@ -17,6 +17,6 @@ int Attribute::getIndex() {
     return this->index;
 }
 
-vector<string> Attribute::getValues() {
+vector<string> Attribute::getValues() const {
     return this->values;
 }
