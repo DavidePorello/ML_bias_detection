@@ -17,10 +17,10 @@ public:
     explicit CleanedDataset();
     const Eigen::MatrixXf &getDataset();
     Eigen::VectorXf getLabels();
-    vector<string> getAttributes() const;
+    [[nodiscard]] vector<string> getAttributes() const;
     int getAttributeIndex(const string& attribute);
-    string getAttribute(int i);
-    int getNumberOfValues(int i) const;
+    [[maybe_unused]] string getAttribute(int i);
+    [[nodiscard]] int getNumberOfValues(int i) const;
 };
 
 #endif //SDP_PROJECT_CLEANEDDATASET_H

@@ -82,7 +82,7 @@ Eigen::VectorXf CleanedDataset::getLabels() {
 
 vector<string> CleanedDataset::getAttributes() const{
     vector<string> classes;
-    for(Attribute& a : this->attributes)
+    for(const Attribute& a : this->attributes)
         classes.push_back(a.getName());
     return classes;
 }
@@ -97,7 +97,7 @@ int CleanedDataset::getAttributeIndex(const string& attribute) {
     return -1;
 }
 
-string CleanedDataset::getAttribute(int i) {
+[[maybe_unused]] string CleanedDataset::getAttribute(int i) {
     return this->attributes[i].getName();
 }
 
