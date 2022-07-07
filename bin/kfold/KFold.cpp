@@ -101,8 +101,8 @@ void KFold::run_model(KFoldTask &t) {
     model.fit(data, data_labels);
     // predict the values
     model.predict(test, predictions);
-    // extract predictions relative to all categories and compute their means
 
+    // extract predictions relative to all categories and compute their means
     Eigen::MatrixXf results = move(process_results(test, predictions));
 
     //TODO remove
