@@ -24,8 +24,8 @@ const string attribute = "sex";
 const string label_name = "wage";
 
 /** Define which model to use by uncommenting the desired model */
-LinearRegression model;
-//PolynomialRegression model(2);
+//LinearRegression model;
+PolynomialRegression model(2);
 ////////////////////////
 
 using namespace std;
@@ -35,22 +35,20 @@ int main() {
     cout << "Loading dataset..." << endl;
     CleanedDataset d;
     Eigen::MatrixXf m = d.getDataset();
+    cout << m.rows() << endl;
     vector<string> classes = d.getAttributes();
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
     int attribute_num_categories = d.getNumberOfValues(attr_index);
 
     // TODO remove dataset shrinker
-    m.conservativeResize(50, 10);
-    labels.conservativeResize(50);
+    //m.conservativeResize(50, 10);
+    //labels.conservativeResize(50);
 
-    cout << m<<endl;
-    cout << labels<<endl;
+    //cout << m<<endl;
+    //cout << labels<<endl;
 
     //cout << labels << endl; // TODO remove
-    for(int k=0; k< labels.size(); k++)
-        if(k<0)
-            cout << labels[k] << " ";
     cout << endl << endl << endl;
 
     // Initialize worker classes
