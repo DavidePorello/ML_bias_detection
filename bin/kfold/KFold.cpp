@@ -24,7 +24,6 @@ KFold::KFold(int num_folds, int num_threads,
         this->run_model(t);
     };
     this->pool = make_unique<ThreadPool<KFoldTask>>(kfold_func, this->num_threads, false);
-
 }
 
 /**
@@ -76,34 +75,46 @@ vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const Eigen::MatrixXf
  * @param t: KFoldTask containing the index of the fold to process
  */
 void KFold::run_model(KFoldTask &t) {
-    Eigen::VectorXf predictions, data_labels;
-    Eigen::MatrixXf test, data;
-    const Eigen::MatrixXf &dataset = t.getDataset();
+    int i, j;
+    Eigen::VectorXf predictions;
+    Eigen::MatrixXf test;
+    Eigen::MatrixXf &dataset = t.getDataset();
     int num_records = dataset.rows();
+    int num_cols = dataset.cols();
     int test_fold_index = t.get_test_fold_index();
     int test_fold_start = get_fold_start_index(num_records, test_fold_index);
     int test_fold_end = get_fold_start_index(num_records, test_fold_index + 1);
     int test_fold_size = test_fold_end - test_fold_start;
-
-    // define vector of indices of the records in the dataset and test fold
-    vector<int> data_indices(num_records - test_fold_size);
-    iota(data_indices.begin(), data_indices.begin() + test_fold_start, 0);
-    iota(data_indices.begin() + test_fold_start, data_indices.end(), test_fold_end);
-    vector<int> test_indices(test_fold_end - test_fold_start);
-    iota(test_indices.begin(), test_indices.end(), test_fold_start);
+    int num_train_records = num_records - test_fold_size;
 
     // pop test fold from dataset
-    data = dataset(data_indices, Eigen::all);
-    test = dataset(test_indices, Eigen::all);
-    data_labels = labels(data_indices);
+    test = dataset.block(test_fold_start, 0, test_fold_size, num_cols);
+    Eigen::MatrixXf data(num_train_records, num_cols);
+    data.block(0,0,test_fold_start, num_cols) = dataset.block(0,0,test_fold_start, num_cols);
+    data.block(test_fold_start,0,num_records-test_fold_end, num_cols) = dataset.block(test_fold_end,0,num_records-test_fold_end, num_cols);
+    Eigen::VectorXf data_labels(num_train_records);
+    data_labels.segment(0,test_fold_start) = labels.segment(0,test_fold_start);
+    data_labels.segment(test_fold_start,num_records-test_fold_end) = labels.segment(test_fold_end,num_records-test_fold_end);
 
+    if(test_fold_index == 4 ) cout<<"attribute " << data.row(0) << endl; //TODO remove
     // train the model
     model.fit(data, data_labels);
     // predict the values
     model.predict(test, predictions);
-    // extract predictions relative to all categories and compute their means
 
+    if (test_fold_index == 4) {
+        //cout << predictions << endl;
+        cout << predictions << endl;
+    }
+
+    // extract predictions relative to all categories and compute their means
     Eigen::MatrixXf results = move(process_results(test, predictions));
+
+    //TODO remove
+    if (test_fold_index == 4) {
+        //cout << predictions << endl;
+        cout << results << endl;
+    }
 
     t.set_predictions(move(results));
 }

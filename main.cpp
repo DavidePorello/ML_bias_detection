@@ -13,19 +13,19 @@
 
 /////////// CONFIG
 
-#define NUM_THREADS_ALTERNATION 8
-#define NUM_THREADS_KFOLD 8
+#define NUM_THREADS_ALTERNATION 1
+#define NUM_THREADS_KFOLD 1
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test (i.e. "sex" or "race")*/
 const string attribute = "sex";
 
-/** Disaply name for the prediction values */
+/** Display name for the prediction values */
 const string label_name = "wage";
 
 /** Define which model to use by uncommenting the desired model */
-//LinearRegression model;
-PolynomialRegression model(2);
+LinearRegression model;
+//PolynomialRegression model(2);
 ////////////////////////
 
 using namespace std;
@@ -34,11 +34,24 @@ int main() {
 
     cout << "Loading dataset..." << endl;
     CleanedDataset d;
-    const Eigen::MatrixXf m = d.getDataset();
+    Eigen::MatrixXf m = d.getDataset();
     vector<string> classes = d.getAttributes();
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
     int attribute_num_categories = d.getNumberOfValues(attr_index);
+
+    // TODO remove dataset shrinker
+    m.conservativeResize(50, 10);
+    labels.conservativeResize(50);
+
+    cout << m<<endl;
+    cout << labels<<endl;
+
+    //cout << labels << endl; // TODO remove
+    for(int k=0; k< labels.size(); k++)
+        if(k<0)
+            cout << labels[k] << " ";
+    cout << endl << endl << endl;
 
     // Initialize worker classes
     DatasetAlternator bd(m, attr_index, attribute_num_categories, NUM_THREADS_ALTERNATION);
@@ -92,6 +105,7 @@ int main() {
         cout << "\rCollected alternated prediction " << alt_means.size() << "/" << alt_predictions_f.size();
     }
     for(auto& i:alt_means) cout <<endl<< i << endl; // TODO remove
+    for(auto& i:alt_stddevs) cout <<endl<< i << endl; // TODO remove
 
     // print plots
     cout << endl << "Printing plots..." << endl;

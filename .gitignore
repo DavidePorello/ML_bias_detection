@@ -40,4 +40,5 @@ dataset/*census-income*
 dataset/cleaned-dataset.txt
 
 # Plots
-plots/*
+plots/alternation*
+plots/bias_evaluation*

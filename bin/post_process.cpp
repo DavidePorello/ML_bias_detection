@@ -34,7 +34,7 @@ double kl_divergence(float mu_1, float sigma_1, float mu_2, float sigma_2) {
 void process_results(const CleanedDataset& d, const PlotML& plotter, Eigen::MatrixXf& true_means, Eigen::MatrixXf& true_stddevs, vector<Eigen::MatrixXf>& alt_means, vector<Eigen::MatrixXf>& alt_stddevs, const string& label_name, int attr_index){
 
     int attribute_num_categories = d.getNumberOfValues(attr_index);
-    vector<string> categories = d.getAttributes();
+    vector<string> categories = d.getCategories(attr_index);
     int num_folds = true_means.cols();
 
     for(int a1 = 0, i = 0; a1 < attribute_num_categories-1 ; a1++)
