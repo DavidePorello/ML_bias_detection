@@ -5,7 +5,7 @@
 #include "Eigen/Core"
 #include "../thread_pool/ThreadPool.h"
 #include "AlternationTask.h"
-
+#include "../data_types.h"
 
 using namespace std;
 
@@ -14,7 +14,7 @@ public:
     DatasetAlternator(const Eigen::MatrixXf &dataset, int &attribute, int &num_categories,
                       const int &num_threads);
 
-    vector<future<Eigen::MatrixXf>> run();
+    vector<future<AlternatedMatrix>> run();
 
     void join_threads();
 private:

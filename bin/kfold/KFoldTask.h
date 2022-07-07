@@ -3,24 +3,25 @@
 
 #include <future>
 #include "../thread_pool/Task.h"
+#include "../data_types.h"
 
 using namespace std;
 
 class KFoldTask : public Task {
 private:
     int test_fold_index;
-    Eigen::MatrixXf dataset;
+    AlternatedMatrix dataset;
     promise<Eigen::MatrixXf> promise_predictions;
 public:
     KFoldTask();
 
     explicit KFoldTask(bool stop_signal);
 
-    KFoldTask(Eigen::MatrixXf dataset, int test_fold_index);
+    KFoldTask(AlternatedMatrix dataset, int test_fold_index);
 
     [[nodiscard]] const int &get_test_fold_index() const;
 
-    Eigen::MatrixXf &getDataset();
+    AlternatedMatrix &getDataset();
 
     future<Eigen::MatrixXf> get_future();
 

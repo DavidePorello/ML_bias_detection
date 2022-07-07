@@ -31,12 +31,12 @@ KFold::KFold(int num_folds, int num_threads,
  * @param dataset: a future containing the dataset to compute the predictions on.
  * @return a future containing the result of KFold::compute_predictions()
  */
-future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(future<Eigen::MatrixXf> &dataset) {
+future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(future<AlternatedMatrix> &dataset) {
     future<vector<future<Eigen::MatrixXf>>> fut = async(launch::async,
-                                                        [this, &dataset]() -> vector<future<Eigen::MatrixXf>> {
-                                                            Eigen::MatrixXf d = dataset.get();
-                                                            return compute_predictions(d);
-                                                        });
+                                                         [this, &dataset]() -> vector<future<Eigen::MatrixXf>> {
+                                                             AlternatedMatrix d = dataset.get();
+                                                             return compute_predictions(d);
+                                                         });
     return move(fut);
 }
 
@@ -50,7 +50,7 @@ future<vector<future<Eigen::MatrixXf>>> KFold::compute_predictions_async_pool(fu
  *          <li> Column 1 contains their standard deviation
  *      </ul>
  */
-vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const Eigen::MatrixXf &dataset) {
+vector<future<Eigen::MatrixXf>> KFold::compute_predictions(const AlternatedMatrix &dataset) {
 
     vector<future<Eigen::MatrixXf>> predictions;
 
@@ -78,7 +78,7 @@ void KFold::run_model(KFoldTask &t) {
     int i, j;
     Eigen::VectorXf predictions;
     Eigen::MatrixXf test;
-    Eigen::MatrixXf &dataset = t.getDataset();
+    Eigen::MatrixXf &dataset = t.getDataset().dataset;
     int num_records = dataset.rows();
     int num_cols = dataset.cols();
     int test_fold_index = t.get_test_fold_index();
@@ -90,25 +90,22 @@ void KFold::run_model(KFoldTask &t) {
     // pop test fold from dataset
     test = dataset.block(test_fold_start, 0, test_fold_size, num_cols);
     Eigen::MatrixXf data(num_train_records, num_cols);
-    data.block(0,0,test_fold_start, num_cols) = dataset.block(0,0,test_fold_start, num_cols);
-    data.block(test_fold_start,0,num_records-test_fold_end, num_cols) = dataset.block(test_fold_end,0,num_records-test_fold_end, num_cols);
+    data.block(0, 0, test_fold_start, num_cols) = dataset.block(0, 0, test_fold_start, num_cols);
+    data.block(test_fold_start, 0, num_records - test_fold_end, num_cols) = dataset.block(test_fold_end, 0,
+                                                                                          num_records - test_fold_end,
+                                                                                          num_cols);
     Eigen::VectorXf data_labels(num_train_records);
-    data_labels.segment(0,test_fold_start) = labels.segment(0,test_fold_start);
-    data_labels.segment(test_fold_start,num_records-test_fold_end) = labels.segment(test_fold_end,num_records-test_fold_end);
+    data_labels.segment(0, test_fold_start) = labels.segment(0, test_fold_start);
+    data_labels.segment(test_fold_start, num_records - test_fold_end) = labels.segment(test_fold_end,
+                                                                                       num_records - test_fold_end);
 
-    if(test_fold_index == 4 ) cout<<"attribute " << data.row(0) << endl; //TODO remove
     // train the model
     model.fit(data, data_labels);
     // predict the values
     model.predict(test, predictions);
 
-    if (test_fold_index == 4) {
-        //cout << predictions << endl;
-        cout << predictions << endl;
-    }
-
     // extract predictions relative to all categories and compute their means
-    Eigen::MatrixXf results = move(process_results(test, predictions));
+    Eigen::MatrixXf results = move(process_results(test, predictions, t.getDataset().a1, t.getDataset().a2));
 
     //TODO remove
     if (test_fold_index == 4) {
@@ -142,7 +139,7 @@ int KFold::get_fold_start_index(int num_records, int fold_index) const {
  *      </ul>
  */
 Eigen::MatrixXf
-KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions) const {
+KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predictions, int a1, int a2) const {
     int i;
     vector<vector<float>> cat_preds(
             num_categories); // vector. each element is a vector containing all predictions relative to 1 category
@@ -163,6 +160,13 @@ KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predi
             results(i, 1) = stddev(preds, mean);
         } else
             results(i, 0) = results(i, 0) = 0;
+    }
+
+    // If the dataset is alternated, swap the rows relative to the swapped attributes
+    if(a1>=0 && a2>=0) {
+        Eigen::VectorXf tmp = results.row(a1);
+        results.row(a1) = results.row(a2);
+        results.row(a2) = tmp;
     }
 
     return move(results);

@@ -30,14 +30,14 @@ DatasetAlternator::DatasetAlternator(const Eigen::MatrixXf &dataset, int &attrib
  * Cuncurrently generate all alternated datasets
  * @return a vector of futures, each containing an alternated dataset
  */
-vector<future<Eigen::MatrixXf>> DatasetAlternator::run() {
+vector<future<AlternatedMatrix>> DatasetAlternator::run() {
 
-    vector<future<Eigen::MatrixXf>> alt_dataset_futures;
+    vector<future<AlternatedMatrix>> alt_dataset_futures;
 
     // for each alternated dataset to compute, define a task and insert it in the thread pool
     for (int i = 0; i < num_categories; i++)
         for (int j = i + 1; j < num_categories; j++) {
-            AlternationTask alternated_task(i, j);
+            AlternationTask alternated_task(i,j);
             alt_dataset_futures.emplace_back(move(alternated_task.get_future()));
             pool->enqueue(move(alternated_task));
         }
@@ -67,7 +67,8 @@ void DatasetAlternator::compute_alternated_dataset(AlternationTask &t) {
             d(i, attribute_index) = c1;
     }
 
-    t.set_alternated_dataset(move(d));
+    AlternatedMatrix result(move(d), t.getCategory1(), t.getCategory2());
+    t.set_alternated_dataset(move(result));
 }
 
 /**
