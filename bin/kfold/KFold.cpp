@@ -99,6 +99,19 @@ void KFold::run_model(KFoldTask &t) {
     data_labels.segment(test_fold_start, num_records - test_fold_end) = labels.segment(test_fold_end,
                                                                                        num_records - test_fold_end);
 
+    // TODO alternation?
+    int c1 = t.getDataset().a1;
+    int c2 = t.getDataset().a2;
+    if(c1>=0 && c2>=0) {
+        for (int i = 0; i < test.rows(); i++) {
+            // if attribute has value c1 or c2, assign it to the other. since they are floats, we can't use normal equivalence ==
+            if (abs(test(i, attribute_index) - c1) < 0.05)
+                test(i, attribute_index) = c2;
+            else if (abs(test(i, attribute_index) - c2) < 0.05)
+                test(i, attribute_index) = c1;
+        }
+    }
+
     // train the model
     model.fit(data, data_labels);
     // predict the values
@@ -107,10 +120,23 @@ void KFold::run_model(KFoldTask &t) {
     // extract predictions relative to all categories and compute their means
     Eigen::MatrixXf results = move(process_results(test, predictions, t.getDataset().a1, t.getDataset().a2));
 
+    // If the train set is alternated, swap again the rows relative to the swapped attributes
+    if(c1>=0 && c2>=0) {
+        Eigen::VectorXf tmp = results.row(c1);
+        results.row(c1) = results.row(c2);
+        results.row(c2) = tmp;
+    }
+
     //TODO remove
-    if (test_fold_index == 4) {
+    if (test_fold_index == 0) {
+        /*
+        for (i = 0; i < test.rows(); i++) {
+            int category = static_cast<int>(round(test(i, attribute_index)));
+            if((c1<0 && category == 0) || (c1>=0 && category == 1))
+                cout << predictions(i) << ", ";
+        }*/
         //cout << predictions << endl;
-        cout << results << endl;
+        cout << endl << results << endl;
     }
 
     t.set_predictions(move(results));
@@ -160,13 +186,6 @@ KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predi
             results(i, 1) = stddev(preds, mean);
         } else
             results(i, 0) = results(i, 0) = 0;
-    }
-
-    // If the dataset is alternated, swap the rows relative to the swapped attributes
-    if(a1>=0 && a2>=0) {
-        Eigen::VectorXf tmp = results.row(a1);
-        results.row(a1) = results.row(a2);
-        results.row(a2) = tmp;
     }
 
     return move(results);

@@ -25,8 +25,8 @@ const string attribute = "sex";
 const string label_name = "wage";
 
 /** Define which model to use by uncommenting the desired model */
-LinearRegression model;
-//PolynomialRegression model(2);
+//LinearRegression model;
+PolynomialRegression model(2);
 ////////////////////////
 
 using namespace std;
@@ -42,9 +42,9 @@ int main() {
     int attribute_num_categories = d.getNumberOfValues(attr_index);
 
     // TODO remove dataset shrinker
-    /*
-    m.conservativeResize(50, 10);
-    labels.conservativeResize(50);*/
+
+    m.conservativeResize(1000, 10);
+    labels.conservativeResize(1000);
 
     // Initialize worker classes
     DatasetAlternator bd(m, attr_index, attribute_num_categories, NUM_THREADS_ALTERNATION);
