@@ -6,8 +6,6 @@
 #include "dataset/CleanedDataset.h"
 #include "bin/dataset_alternator/DatasetAlternator.h"
 #include "bin/kfold/KFold.h"
-#include "bin/ml/LinearRegression.h"
-#include "bin/ml/PolynomialRegression.h"
 #include "bin/plot/PlotML.h"
 #include "bin/post_process.h"
 
@@ -22,9 +20,11 @@ const string attribute = "sex";
 /** Display name for the prediction values */
 const string label_name = "wage";
 
-/** Define which model to use by uncommenting the desired model */
-//LinearRegression model;
-PolynomialRegression model(2);
+/** Define which ML to use for training.
+ * @var 0: use Linear Regression
+ * @var 1: use Polynomial Regression
+ * */
+int modelML_type = 0;
 ////////////////////////
 
 using namespace std;
@@ -33,20 +33,19 @@ int main() {
 
     cout << "Loading dataset..." << endl;
     CleanedDataset d;
-    const Eigen::MatrixXf m = d.getDataset();
+    Eigen::MatrixXf m = d.getDataset();
     vector<string> classes = d.getAttributes();
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
     int attribute_num_categories = d.getNumberOfValues(attr_index);
 
     // TODO remove dataset shrinker
-    /*
-    m.conservativeResize(1000, 10);
-    labels.conservativeResize(1000);
-     */
+    m.conservativeResize(100, 10);
+    labels.conservativeResize(100);
+
 
     // Initialize worker classes
-    KFold kfold(NUM_FOLDS, NUM_THREADS_KFOLD, labels, static_cast<ModelML &> (model), attribute_num_categories,
+    KFold kfold(NUM_FOLDS, NUM_THREADS_KFOLD, labels, modelML_type, attribute_num_categories,
                 attr_index);
     PlotML plotter(NUM_FOLDS);
 

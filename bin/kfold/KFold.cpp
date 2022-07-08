@@ -7,16 +7,16 @@
  * @param num_folds: number of folds for the K-folds
  * @param num_threads: number of threads to use for the parallel computation
  * @param labels: vector of the label values (wage, e.g. 1020.50)
- * @param model: ML model class
+ * @param modelML_type: identifier of the ML model class
  * @param num_categories: number of categories of the alternated attribute (e.g. attribute gender has 2 categories -> male, female)
  * @param attribute_index: index of the attribute (i.e. in the dataset, the values for the alternated attribute are on column <attribute_index>)
  */
 KFold::KFold(int num_folds, int num_threads,
-             const Eigen::VectorXf &labels, ModelML &model,
+             const Eigen::VectorXf &labels, int modelML_type,
              int num_categories, int attribute_index) : num_folds(num_folds),
                                                         num_threads(num_threads),
                                                         labels(labels),
-                                                        model(model),
+                                                        modelML_type(modelML_type),
                                                         num_categories(num_categories),
                                                         attribute_index(attribute_index) {
     // create thread pool
@@ -99,9 +99,9 @@ void KFold::run_model(KFoldTask &t) {
     data_labels.segment(test_fold_start, num_records - test_fold_end) = labels.segment(test_fold_end,
                                                                                        num_records - test_fold_end);
 
-    // TODO alternation?
-    int c1 = t.getDataset().a1;
-    int c2 = t.getDataset().a2;
+    // compute the alternation function on the test set (if required)
+    int c1 = t.getDataset().a1; // first category index to alternate (-1 if no alternation is required)
+    int c2 = t.getDataset().a2; // second category index to alternate
     if(c1>=0 && c2>=0) {
         for (int i = 0; i < test.rows(); i++) {
             // if attribute has value c1 or c2, assign it to the other. since they are floats, we can't use normal equivalence ==
@@ -112,10 +112,10 @@ void KFold::run_model(KFoldTask &t) {
         }
     }
 
-    // train the model
-    model.fit(data, data_labels);
-    // predict the values
-    model.predict(test, predictions);
+    // train the model and get the predictions
+    unique_ptr<ModelML> model = createModel();
+    model->fit(data, data_labels);
+    model->predict(test, predictions);
 
     // extract predictions relative to all categories and compute their means
     Eigen::MatrixXf results = move(process_results(test, predictions, t.getDataset().a1, t.getDataset().a2));
@@ -125,18 +125,6 @@ void KFold::run_model(KFoldTask &t) {
         Eigen::VectorXf tmp = results.row(c1);
         results.row(c1) = results.row(c2);
         results.row(c2) = tmp;
-    }
-
-    //TODO remove
-    if (test_fold_index == 3) {
-        /*
-        for (i = 0; i < test.rows(); i++) {
-            int category = static_cast<int>(round(test(i, attribute_index)));
-            if((c1<0 && category == 0) || (c1>=0 && category == 1))
-                cout << predictions(i) << ", ";
-        }*/
-        //cout << predictions << endl;
-        cout << endl << results << endl;
     }
 
     t.set_predictions(move(results));
@@ -189,6 +177,22 @@ KFold::process_results(const Eigen::MatrixXf &test, const Eigen::VectorXf &predi
     }
 
     return move(results);
+}
+
+/**
+ * Instantiate a new Machine Learning class, based on this->modelML_type.
+ * It must create a new model every time, since it is not thread safe
+ * @return a model extending the ModelML class. Throw "invalid_argument" if this->modelML_type is not valid
+ */
+unique_ptr<ModelML> KFold::createModel() const {
+    if(modelML_type == 0) {
+        unique_ptr<ModelML> lr = make_unique<LinearRegression>();
+        return move(lr);
+    }else if(modelML_type == 1){
+        unique_ptr<ModelML> pr = make_unique<PolynomialRegression>(2);
+        return move(pr);
+    }
+    else throw invalid_argument("Invalid modelML_type");
 }
 
 /**

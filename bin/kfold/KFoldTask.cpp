@@ -17,7 +17,7 @@ const int &KFoldTask::get_test_fold_index() const {
     return test_fold_index;
 }
 
-AlternatedMatrix &KFoldTask::getDataset(){
+const AlternatedMatrix &KFoldTask::getDataset() const{
     return ref(dataset);
 }
 

@@ -21,7 +21,7 @@ public:
 
     [[nodiscard]] const int &get_test_fold_index() const;
 
-    AlternatedMatrix &getDataset();
+    [[nodiscard]] const AlternatedMatrix &getDataset() const;
 
     future<Eigen::MatrixXf> get_future();
 
