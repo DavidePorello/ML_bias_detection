@@ -31,7 +31,6 @@ private:
     int attribute_index;
     int num_categories;
     unique_ptr<ThreadPool<KFoldTask>> pool;
-    mutex m; // TODO remove
 
     void run_model(KFoldTask &t);
 

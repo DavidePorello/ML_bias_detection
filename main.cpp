@@ -24,7 +24,7 @@ const string label_name = "wage";
  * @var 0: use Linear Regression
  * @var 1: use Polynomial Regression
  * */
-int modelML_type = 0;
+int modelML_type = 1;
 ////////////////////////
 
 using namespace std;
@@ -38,10 +38,12 @@ int main() {
     Eigen::VectorXf labels = d.getLabels();
     int attr_index = d.getAttributeIndex(attribute);
     int attribute_num_categories = d.getNumberOfValues(attr_index);
+    if(attr_index < 0) throw invalid_argument("attribute is not valid");
 
     // TODO remove dataset shrinker
+    /*
     m.conservativeResize(100, 10);
-    labels.conservativeResize(100);
+    labels.conservativeResize(100);*/
 
 
     // Initialize worker classes
