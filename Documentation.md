@@ -22,7 +22,7 @@ Given the starting dataset D[[2]](#references), the paper illustrates the follow
 5. Predict the alternative predicted label f(Dϕ) → ˆyϕ.
 
 To improve the performance of this operations, we decided to use parallelization, in the form of a thread pool, to compute concurrently the predictions of the machine learning model.
-![Design_diagram](Design_diagram.png)
+![Design diagram]("Design_diagram.pdf")
 
 ### Preprocessing
 The preprocessing is highly inspired by the paper, as we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 records approximately.
@@ -73,11 +73,14 @@ We have measured the performances of the program (excluding the dataset loading 
 ![Linear_regression_race](performance/LR_race.png)
 ![Polynomial_regression_sex](performance/PR_sex.png)
 ![Polynomial_regression_race](performance/PR_race.png)
+![Alternation_female_male](performance/alternation_Female_Male_page-0001.jpg)
+![Alternation_male_female](performance/alternation_Male_Female_page-0001.jpg)
+![Bias_male_female](performance/bias_evaluation_Female_Male_page-0001.jpg)
+![Alternation_black_white](performance/alternation_Black_White_page-0001.jpg)
+![Alternation_white_black](performance/alternation_White_Black_page-0001.jpg)
+![Bias_black_white](performance/bias_evaluation_White_Black_page-0001.jpg)
 ## Conclusion
-After the development of the code, we can make some considerations:
-- The paper states that the alternation function is computed on the dataset D. This is not precise, as with this approach the code would not produce appreciable results. The alternation function must be computed at each iteration on the test fold only
-- As seen in the alternation graphs, our model predicts wages that are considerably different with respect to the paper's findings. Upon closer inspection, our results seem to be correct, as the average wage in our dataset is about 1800. 
-  A partial explanation for this behavious is that the difference might be caused by a different preprocessing of the original dataset.
+................................something................................
 
 ## References
 [1] 2021, _Detection and Evaluation of Machine Learning Bias._ Alelyani, Salem. Applied Sciences 11, no. 14: 6271. https://doi.org/10.3390/app11146271  
