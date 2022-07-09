@@ -16,7 +16,7 @@
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test (i.e. "sex" or "race")*/
-const string attribute = "sex";
+const string attribute = "race";
 
 /** Display name for the prediction values */
 const string label_name = "wage";

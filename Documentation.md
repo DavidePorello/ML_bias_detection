@@ -22,7 +22,7 @@ Given the starting dataset D[[2]](#references), the paper illustrates the follow
 5. Predict the alternative predicted label f(Dϕ) → ˆyϕ.
 
 To improve the performance of this operations, we decided to use parallelization, in the form of a thread pool, to compute concurrently the predictions of the machine learning model.
-![Design diagram]("Design_diagram.pdf")
+![Design diagram](Design_diagram.pdf)
 
 ### Preprocessing
 The preprocessing is highly inspired by the paper, infact we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 approximately.
@@ -69,6 +69,12 @@ We have measured the performances of the program (excluding the dataset loading 
 ![Linear_regression_race](performance/LR_race.png)
 ![Polynomial_regression_sex](performance/PR_sex.png)
 ![Polynomial_regression_race](performance/PR_race.png)
+![Alternation_Black_white](performance/alternation_Black_White_page-0001.jpg)
+![Alternation_white_black](performance/alternation_White_Black_page-0001.jpg)
+![Bias_black_white](performance/bias_evaluation_White_Black_page-0001.jpg)
+![Alternation_male_female](performance/alternation_Male_Female_page-0001.jpg)
+![Alternation_female_male](performance/alternation_Female_Male_page-0001.jpg)
+![Bias_male_female](performance/bias_evaluation_Female_Male_page-0001.jpg)
 ## Conclusion
 ................................something................................
 
