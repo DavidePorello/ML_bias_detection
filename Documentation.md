@@ -25,7 +25,7 @@ To improve the performance of this operations, we decided to use parallelization
 ![Design_diagram](Design_diagram.png)
 
 ### Preprocessing
-The preprocessing is highly inspired by the paper, infact we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 approximately.
+The preprocessing is highly inspired by the paper, as we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 records approximately.
 We have selected a set of 10 attributes that, for us, are strictly related to the "wage" (that is the label).
 We have filtered each categorial attributes (all of our attributes are categorial except the age) specifying part of the possible categorial values (see file `dataset/censun-income.names`).
 The class `ClearedDataset` loads the dataset in an Eigen::MatrixXf and the labels in an Eigen::vectorXf taking the values from the file `dataset/cleaned-dataset.txt`, if the file is not present yes it creates the file using the class `Dataset`.
@@ -38,8 +38,10 @@ The simplest approach is to create a thread for each dataset, and then create K 
 To compute the KL and draw the graph we don't need to return the entire prediction vector.
 
 Instead, we decided to create more refined solution, using a thread pool of N worker threads.
-For each fold of each dataset, a new task is created and enqueued in the thread pool. This decreses the memory requirements of the program, especially when detecting the bias of a PBA with many categories, and allows a better control of the parallelization.
-If only 1 thread is created in the thread pool, the program is essentially sequential (plus a small overhead from the thread management), which allows us to measure the performance benefits of the parallelization.
+For each fold of each dataset, a new task is created and enqueued in the thread pool. This decreases the memory requirements of the program, especially when detecting the bias of a PBA with many categories, and it allows for a better control of the parallelization.
+If only 1 thread is created in the thread pool, the program is essentially sequential (plus a small overhead due the thread management), which allows us to measure the performance benefits of the parallelization.
+
+In the code, this is done through the `TreadPool` class, which automatically precessed the enqueued task (class `KFoldTask`). Synchronization is handled thourgh a simple clock and condition variable.
 
 Other kinds of parallelization can be proposed. For example, the alternation function or the variance calculations can be splitted in different threads, but this does not improves the performance, since they are not appreciably expensive, and the program already surpasses the number of hardware threads on any consumer machine.
 ### Machine Learning models
@@ -60,9 +62,11 @@ For this reason, the `PolynomialRegression` class simply performs the feature ex
 Notice that the computation of feature expansion is by definition a pretty expensive task. Moreover, since it increases the number of dimensions, it also increases the complexity of training and using the model. As a consequence, the application supports degrees only up to 4.
 ### Alternation function
 The alternation function is a simple function that switches two categories of an attribute on a dataset. Since the time needed to compute this function is negligible (under 1 ms), it is computed sequentially (using multiple threads would just be an additional overhead).
+It is calculated in the thread function, so different datasets are alternated in parallel.
 ### KL divergence computation
-The KL divergence is computed by a function which partially uses Eigen utilities to compute mean and standard deviation. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). 
-However, most of this cost compes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (threfore taking advantege of the parallelization), and in the post process section at the end, the code just computes the final formula, which requires less than a millisecond to compute.
+The KL divergence is computed as stated in the paper. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). 
+However, most of this cost comes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (threfore taking advantege of the parallelization), and in the post process section at the end the code just computes the final formula, which requires less than a millisecond of time.
+Therefore there is no need to consider additional measures to speed up this functionality.
 ## Experimental results
 We have measured the performances of the program (excluding the dataset loading and the plots creation) with the linear or polynomial regression and the attributes 'sex' or 'race' as PBA (as the paper says).
 ![Linear_regression_sex](performance/LR_sex.png)
