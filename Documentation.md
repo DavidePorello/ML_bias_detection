@@ -92,7 +92,9 @@ After the development of the code, we can make some considerations:
 - As seen in the alternation plots, our model predicts wages that are considerably different with respect to the paper's findings. Upon closer inspection, our results seem to be correct, as the average wage in our dataset is about 1800.
   A partial explanation for this behavious is that the difference might be caused by a different preprocessing of the original dataset.
   However, the same bias trends that are described in the paper can also be seen in our results
-- Our alternation plots are much closer together (there have an average delta of about 100), therefore the bias evaluation plots are not as neatly separated as in the paper, especially when using the Polynomial Regression on the "race" attribute. 
+- Our alternation plots are much closer together (there have an average delta of about 100), therefore the bias evaluation plots are not as neatly separated as in the paper, especially when using the Polynomial Regression on the "race" attribute.
+- As expected, the linear regression model is considerably faster than the polynomial regression model. Additionally, the former generates comparably worse bias evaluation plots. 
+  More in general, regression is not well suited for this application (the dataset contains mostly categorical attributes), but the actual predition precision is not in the scope of this project
 - The performance plots confirm the espected behaviour: running the code with a single thread gives the worst performance (the code is similar to a sequential one), and increasing the number of threads improves the performance.
   These benchmarks were collected on a machine with 4 hardware threads, and as expected, we see that after N=4 the performance does not improve as much. On the contrary, incrementing N further increases the thread management overhead, which contributes to a small increase in the processing time.
   To conclude, the most efficient way to run this code is to run it with a number of threads equal (or slightly superior) to the number of hardware threads of the machine.
