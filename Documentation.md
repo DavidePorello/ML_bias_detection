@@ -68,14 +68,16 @@ The KL divergence is computed as stated in the paper. The KL divergence computat
 However, most of this cost comes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (threfore taking advantege of the parallelization), and in the post process section at the end the code just computes the final formula, which requires less than a millisecond of time.
 Therefore there is no need to consider additional measures to speed up this functionality.
 ## Experimental results
-We have measured the performances of the program (excluding the dataset loading and the plots creation) with the linear or polynomial regression and the attributes 'sex' or 'race' as PBA (as the paper says).
+We have measured the performance of the program (excluding the dataset loading and the plots creation) using a different number of threads in the thread pool. The measurements have been collected with both the linear and polynomial regression and the attributes 'sex' and 'race' as PBA.
 ![Linear_regression_sex](performance/LR_sex.png)
 ![Linear_regression_race](performance/LR_race.png)
 ![Polynomial_regression_sex](performance/PR_sex.png)
 ![Polynomial_regression_race](performance/PR_race.png)
-![Alternation_female_male](performance/alternation_Female_Male_page-0001.jpg)
-![Alternation_male_female](performance/alternation_Male_Female_page-0001.jpg)
-![Bias_male_female](performance/bias_evaluation_Female_Male_page-0001.jpg)
+
+The program produces the following output plots. Here are reported only a few of the plots relative to the "race" attribute. All plots can be found in the `plots` folder after the code is executed
+![Alternation_female_male](performance/alternation_Female_Male.jpg)
+![Alternation_male_female](performance/alternation_Male_Female.jpg)
+![Bias_male_female](performance/bias_evaluation_Female_Male.jpg)
 ![Alternation_black_white](performance/alternation_Black_White_page-0001.jpg)
 ![Alternation_white_black](performance/alternation_White_Black_page-0001.jpg)
 ![Bias_black_white](performance/bias_evaluation_White_Black_page-0001.jpg)
