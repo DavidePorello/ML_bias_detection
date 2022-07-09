@@ -1,8 +1,5 @@
 #include "post_process.h"
 
-
-
-
 /** Computes the KL divergence (p||q)
  *  @param mu_1 is the mean of the standard predictions
  *  @param sigma_1 is the standard deviation of standard predictions

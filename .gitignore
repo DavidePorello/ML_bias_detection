@@ -42,3 +42,5 @@ dataset/cleaned-dataset.txt
 # Plots
 plots/alternation*
 plots/bias_evaluation*
+*.plt
+*.dat

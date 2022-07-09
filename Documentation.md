@@ -25,7 +25,12 @@ To improve the performance of this operations, we decided to use parallelization
 ![Design diagram](./plots/Design diagram.pdf)
 
 ### Preprocessing
-................................something................................
+The preprocessing is highly inspired by the paper, infact we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 approximately.
+We have selected a set of 10 attributes that, for us, are strictly related to the "wage" (that is the label).
+We have filtered each categorial attributes (all of our attributes are categorial except the age) specifying part of the possible categorial values (see file `dataset/censun-income.names`).
+The class `ClearedDataset` loads the dataset in an Eigen::MatrixXf and the labels in an Eigen::vectorXf taking the values from the file `dataset/cleaned-dataset.txt`, if the file is not present yes it creates the file using the class `Dataset`.
+Attributes in `ClearedDataset`: age, education, marital stat, major industry code, major occupation code, race, sex, member of a labor union, full or part time employment stat and citizenship.
+
 ### K-fold and parallelization
 As indicated in the paper, the model predictions must be evaluated using K-fold, with K=10. Additionally, this process must be repeated multiple times, on the original dataset and the alternated one(s).
 Computing the model predictions is the most expensive task of the project, therefore we decided to parallelize it.
@@ -59,8 +64,11 @@ The alternation function is a simple function that switches two categories of an
 The KL divergence is computed by a function which partially uses Eigen utilities to compute mean and standard deviation. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). 
 However, most of this cost compes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (threfore taking advantege of the parallelization), and in the post process section at the end, the code just computes the final formula, which requires less than a millisecond to compute.
 ## Experimental results
-................................something................................
-
+We have measured the performances of the program (excluding the dataset loading and the plots creation) with the linear or polynomial regression and the attributes 'sex' or 'race' as PBA (as the paper says).
+![Linear_regression_sex](performance/LR_sex.png)
+![Linear_regression_race](performance/LR_race.png)
+![Polynomial_regression_sex](performance/PR_sex.png)
+![Polynomial_regression_race](performance/PR_race.png)
 ## Conclusion
 ................................something................................
 

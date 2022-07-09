@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <chrono>
 
 #include "Eigen/Core"
 
@@ -24,7 +25,7 @@ const string label_name = "wage";
  * @var 0: use Linear Regression
  * @var 1: use Polynomial Regression
  * */
-int modelML_type = 1;
+int modelML_type = 0;
 ////////////////////////
 
 using namespace std;
@@ -40,18 +41,15 @@ int main() {
     int attribute_num_categories = d.getNumberOfValues(attr_index);
     if(attr_index < 0) throw invalid_argument("attribute is not valid");
 
-    // TODO remove dataset shrinker
-    /*
-    m.conservativeResize(100, 10);
-    labels.conservativeResize(100);*/
+    cout << endl << "Starting parallel computations..." << endl;
 
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
 
     // Initialize worker classes
     KFold kfold(NUM_FOLDS, NUM_THREADS_KFOLD, labels, modelML_type, attribute_num_categories,
                 attr_index);
     PlotML plotter(NUM_FOLDS);
-
-    cout << "Starting parallel computations..." << endl;
 
     // compute the alternated datasets
     //vector<future<AlternatedMatrix>> alt_datasets = bd.run();
@@ -82,7 +80,6 @@ int main() {
         true_means.col(i) = pred.col(0);
         true_stddevs.col(i) = pred.col(1);
     }
-    cout << "Collected standard prediction" << endl << endl;
 
     // collect results of alternated predictions
     vector<Eigen::MatrixXf> alt_means; // each pred is a vector, containing the average of the predictions over each category and fold
@@ -98,10 +95,16 @@ int main() {
         }
         alt_means.emplace_back(cur_means);
         alt_stddevs.emplace_back(cur_stddevs);
-        cout << "\rCollected alternated prediction " << alt_means.size() << "/" << alt_predictions_f.size();
     }
-    for(auto& i:alt_means) cout <<endl<< i << endl; // TODO remove
-    for(auto& i:alt_stddevs) cout <<endl<< i << endl; // TODO remove
+
+    end = std::chrono::system_clock::now();
+    double time = (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count())/1000.0;
+    cout << endl << "Execution time: " << time << endl;
+    cout << "Number of machine threads: " << std::thread::hardware_concurrency() << endl;
+    cout << "Number of threads per Kfold: " << NUM_THREADS_KFOLD << endl;
+    cout << "Attribute: " << attribute << endl;
+    string model = modelML_type ? "Polynomial Regression" : "Linear Regression";
+    cout << "Model: " << model << endl;
 
     // print plots
     cout << endl << "Printing plots..." << endl;
@@ -112,5 +115,3 @@ int main() {
 
     return 0;
 }
-
-
