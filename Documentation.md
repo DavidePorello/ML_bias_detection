@@ -70,7 +70,10 @@ We have measured the performances of the program (excluding the dataset loading 
 ![Polynomial_regression_sex](performance/PR_sex.png)
 ![Polynomial_regression_race](performance/PR_race.png)
 ## Conclusion
-................................something................................
+After the development of the code, we can make some considerations:
+- The paper states that the alternation function is computed on the dataset D. This is not precise, as with this approach the code would not produce appreciable results. The alternation function must be computed at each iteration on the test fold only
+- As seen in the alternation graphs, our model predicts wages that are considerably different with respect to the paper's findings. Upon closer inspection, our results seem to be correct, as the average wage in our dataset is about 1800. 
+  A partial explanation for this behavious is that the difference might be caused by a different preprocessing of the original dataset.
 
 ## References
 [1] 2021, _Detection and Evaluation of Machine Learning Bias._ Alelyani, Salem. Applied Sciences 11, no. 14: 6271. https://doi.org/10.3390/app11146271  
