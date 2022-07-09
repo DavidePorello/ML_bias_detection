@@ -1,7 +1,6 @@
 #  Implementation of alternation functions in C++ for detection and evaluation of bias in ML
 Authors: Ilaria Pilo, Davide Porello, Marco Porro  
 Date: 04/07/2022  
-................................something................................
 
 ## Table of contents
 - [Introduction](#introduction)
