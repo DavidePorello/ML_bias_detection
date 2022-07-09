@@ -1,8 +1,11 @@
-# sdp-project
+# sdp-project user manual
+
+Before attempting to run the code, please read all the sections of this document.
+The code was developed on Windows, but it also works on Linux (Ubuntu or derivatives)
 
 ### Dataset
 
-The [_Census-Income Data Set_](https://archive.ics.uci.edu/ml/machine-learning-databases/census-income-mld/census.tar.gz) was downloaded and extracted as-is inside the _dataset_ folder
+The [_Census-Income Data Set_](https://archive.ics.uci.edu/ml/machine-learning-databases/census-income-mld/census.tar.gz) must be downloaded and extracted as-is inside the _dataset_ folder
 
 ### Installing Eigen
 
@@ -47,3 +50,8 @@ However, in order to work, it requires `gnuplot`.
 Please note that we wrote and tested the code in CLion.
 Clion sets as default working directory the folder `cmake_build_debug`, but the code must be run from the root folder (where `main.cpp` is).
 This can be done by editing the default configuration in CLion
+
+### Run the code
+
+To run the code, just build `main.cpp` and run it. 
+In the first part of the `main.cpp` file there are some useful configuration variables that can be changed to test different aspects of the code. 

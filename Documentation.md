@@ -22,7 +22,9 @@ Given the starting dataset D[[2]](#references), the paper illustrates the follow
 5. Predict the alternative predicted label f(Dϕ) → ˆyϕ.
 
 To improve the performance of this operations, we decided to use parallelization, in the form of a thread pool, to compute concurrently the predictions of the machine learning model.
-![Design diagram]("Design_diagram.pdf")
+![Design_diagram](Design_diagram.png)
+
+To help in the handling of the linear algebra computations, we used the library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), and to produce the output plots we used [Sciplot](https://sciplot.github.io/) 
 
 ### Preprocessing
 The preprocessing is highly inspired by the paper, as we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 records approximately.
@@ -30,6 +32,8 @@ We have selected a set of 10 attributes that, for us, are strictly related to th
 We have filtered each categorial attributes (all of our attributes are categorial except the age) specifying part of the possible categorial values (see file `dataset/censun-income.names`).
 The class `ClearedDataset` loads the dataset in an Eigen::MatrixXf and the labels in an Eigen::vectorXf taking the values from the file `dataset/cleaned-dataset.txt`, if the file is not present yes it creates the file using the class `Dataset`.
 Attributes in `ClearedDataset`: age, education, marital stat, major industry code, major occupation code, race, sex, member of a labor union, full or part time employment stat and citizenship.
+
+However, since the paper does not includes enough details on this step, our preprocessed dataset is different, and as such we also expect our findings to be different.
 
 ### K-fold and parallelization
 As indicated in the paper, the model predictions must be evaluated using K-fold, with K=10. Additionally, this process must be repeated multiple times, on the original dataset and the alternated one(s).
@@ -64,17 +68,19 @@ Notice that the computation of feature expansion is by definition a pretty expen
 The alternation function is a simple function that switches two categories of an attribute on a dataset. Since the time needed to compute this function is negligible (under 1 ms), it is computed sequentially (using multiple threads would just be an additional overhead).
 It is calculated in the thread function, so different datasets are alternated in parallel.
 ### KL divergence computation
-The KL divergence is computed as stated in the paper. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). 
+The KL divergence is computed using the same formula as in the paper. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). 
 However, most of this cost comes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (threfore taking advantege of the parallelization), and in the post process section at the end the code just computes the final formula, which requires less than a millisecond of time.
 Therefore there is no need to consider additional measures to speed up this functionality.
 ## Experimental results
 We have measured the performance of the program (excluding the dataset loading and the plots creation) using a different number of threads in the thread pool. The measurements have been collected with both the linear and polynomial regression and the attributes 'sex' and 'race' as PBA.
+
 ![Linear_regression_sex](performance/LR_sex.png)
 ![Linear_regression_race](performance/LR_race.png)
 ![Polynomial_regression_sex](performance/PR_sex.png)
 ![Polynomial_regression_race](performance/PR_race.png)
 
 The program produces the following output plots. Here are reported only a few of the plots relative to the "race" attribute. All plots can be found in the `plots` folder after the code is executed
+
 ![Alternation_female_male](performance/alternation_Female_Male.jpg)
 ![Alternation_male_female](performance/alternation_Male_Female.jpg)
 ![Bias_male_female](performance/bias_evaluation_Female_Male.jpg)
@@ -82,7 +88,15 @@ The program produces the following output plots. Here are reported only a few of
 ![Alternation_white_black](performance/alternation_White_Black_page-0001.jpg)
 ![Bias_black_white](performance/bias_evaluation_White_Black_page-0001.jpg)
 ## Conclusion
-................................something................................
+After the development of the code, we can make some considerations:
+- The paper states that the alternation function is computed on the dataset D. This is not precise, as with this approach the code would not produce appreciable results (it would just invert the category name in the dataset). Instead, the alternation function must be computed at each iteration on the test fold only
+- As seen in the alternation plots, our model predicts wages that are considerably different with respect to the paper's findings. Upon closer inspection, our results seem to be correct, as the average wage in our dataset is about 1800.
+  A partial explanation for this behavious is that the difference might be caused by a different preprocessing of the original dataset.
+  However, the same bias trends that are described in the paper can also be seen in our results
+- Our alternation plots are much closer together (there have an average delta of about 100), therefore the bias evaluation plots are not as neatly separated as in the paper, especially when using the Polynomial Regression on the "race" attribute. 
+- The performance plots confirm the espected behaviour: running the code with a single thread gives the worst performance (the code is similar to a sequential one), and increasing the number of threads improves the performance.
+  These benchmarks were collected on a machine with 4 hardware threads, and as expected, we see that after N=4 the performance does not improve as much. On the contrary, incrementing N further increases the thread management overhead, which contributes to a small increase in the processing time.
+  To conclude, the most efficient way to run this code is to run it with a number of threads equal (or slightly superior) to the number of hardware threads of the machine.
 
 ## References
 [1] 2021, _Detection and Evaluation of Machine Learning Bias._ Alelyani, Salem. Applied Sciences 11, no. 14: 6271. https://doi.org/10.3390/app11146271  
