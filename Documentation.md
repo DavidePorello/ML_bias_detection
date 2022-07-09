@@ -16,7 +16,11 @@ Date: 04/07/2022
 ## Project design
 ................................something................................
 ### Preprocessing
-................................something................................
+The preprocessing is highly inspired by the paper, infact we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 approximately.
+We have selected a set of 10 attributes that, for us, are strictly related to the "wage" (that is the label).
+We have filtered each categorial attributes (all of our attributes are categorial except the age) specifying part of the possible categorial values (see file `dataset/censun-income.names`).
+The class `ClearedDataset` loads the dataset in an Eigen::MatrixXf and the labels in an Eigen::vectorXf taking the values from the file `dataset/cleaned-dataset.txt`, if the file is not present yes it creates the file using the class `Dataset`.
+Attributes in `ClearedDataset`: age, education, marital stat, major industry code, major occupation code, race, sex, member of a labor union, full or part time employment stat and citizenship.
 ### Machine Learning models
 Unluckily, C++ does not appear to have any intuitive and portable machine learning library. For this reason, after long searches and attempts, we decided to develop our own models.  
 Since [[1]](#references) uses machine learning to predict the wage (i.e., a continuous value), we developed two different regression algorithms:
@@ -37,12 +41,12 @@ Notice that the computation of feature expansion is by definition a pretty expen
 ................................something................................
 ### KL divergence computation
 The KL divergence is computed by a function which partially uses Eigen utilities to compute mean and standard deviation. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). For this reason, we chose to exploit parallelization techniques at higher levels (e.g., we perform KL divergence in parallel for different 10-fold iterations).
-# // FIXME check it is right
-### OTHERS!!!!!
-................................something................................
 ## Experimental results
-................................something................................
-
+We have measured the performances of the program (excluding the dataset loading and the plots creation) with the linear or polynomial regression and the attributes 'sex' or 'race' as PBA (as the paper says).
+![Linear_regression_sex](performance/LR_sex.png)
+![Linear_regression_race](performance/LR_race.png)
+![Polynomial_regression_sex](performance/PR_sex.png)
+![Polynomial_regression_race](performance/PR_race.png)
 ## Conclusion
 ................................something................................
 
