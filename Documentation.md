@@ -22,7 +22,7 @@ Given the starting dataset D[[2]](#references), the paper illustrates the follow
 5. Predict the alternative predicted label f(Dϕ) → ˆyϕ.
 
 To improve the performance of this operations, we decided to use parallelization, in the form of a thread pool, to compute concurrently the predictions of the machine learning model.
-![Design diagram](./plots/Design diagram.pdf)
+![Design diagram]("Design_diagram.pdf")
 
 ### Preprocessing
 The preprocessing is highly inspired by the paper, infact we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 approximately.
