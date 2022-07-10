@@ -1,0 +1,11 @@
+Attributes in ClearedDataset:
+- age: continuous;
+- education: "High school graduate", "Some college but no degree", "Bachelors degree(BA AB BS)", "Masters degree(MA MS MEng MEd MSW MBA)", "Doctorate degree(PhD EdD)";
+- marital stat: "Never married", "Married-civilian spouse present", "Married-spouse absent", "Separated", "Divorced", "Widowed";
+- major industry code: "Entertainment", "Social services", "Agriculture", "Education", "Public administration", "Manufacturing-durable goods", "Manufacturing-nondurable goods", "Wholesale trade", "Retail trade", "Finance insurance and real estate", "Private household services", "Business and repair services", "Personal services except private HH", "Construction", "Medical except hospital", "Transportation", "Utilities and sanitary services", "Mining", "Communications";
+- major occupation code: "Professional specialty", "Farming forestry and fishing", "Sales", "Adm support including clerical", "Protective services", "Handlers equip cleaners etc ", "Precision production craft & repair", "Technicians and related support", "Machine operators assmblrs & inspctrs", "Transportation and material moving", "Private household services";
+- race: "White", "Black", "Other", "Indian", "Asian";
+- sex: "Female", "Male";
+- member of a labor unit: "No", "Yes";
+- full or part time employment stat: "Children or Armed Forces", "Full-time schedules", "Unemployed part- time", "Not in labor force", "Unemployed full-time";
+- citizenship: "Native- Born in the United States", "Foreign born- Not a citizen of U S ", "Native- Born in Puerto Rico or U S Outlying", "Native- Born abroad of American Parent(s)", "Foreign born- U S citizen by naturalization".

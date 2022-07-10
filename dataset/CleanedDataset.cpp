@@ -11,7 +11,7 @@ CleanedDataset::CleanedDataset() {
     classes.emplace_back("marital stat", 7).addValues({"Never married", "Married-civilian spouse present", "Married-spouse absent", "Separated", "Divorced", "Widowed"});
     classes.emplace_back("major industry code", 8).addValues({"Entertainment", "Social services", "Agriculture", "Education", "Public administration", "Manufacturing-durable goods", "Manufacturing-nondurable goods", "Wholesale trade", "Retail trade", "Finance insurance and real estate", "Private household services", "Business and repair services", "Personal services except private HH", "Construction", "Medical except hospital", "Transportation", "Utilities and sanitary services", "Mining", "Communications"});
     classes.emplace_back("major occupation code", 9).addValues({"Professional specialty", "Farming forestry and fishing", "Sales", "Adm support including clerical", "Protective services", "Handlers equip cleaners etc ", "Precision production craft & repair", "Technicians and related support", "Machine operators assmblrs & inspctrs", "Transportation and material moving", "Private household services"});
-    classes.emplace_back("race", 10).addValues({"White", "Black", "Other", "Indian", "Asian"});
+    classes.emplace_back("race", 10).addValues({"White", "Black", "Other", "Amer Indian Aleut or Eskimo", "Asian or Pacific Islander"});
     classes.emplace_back("sex", 12).addValues({"Female", "Male"});
     classes.emplace_back("member of a labor union", 13).addValues({"No", "Yes"});
     classes.emplace_back("full or part time employment stat", 15).addValues({"Children or Armed Forces", "Full-time schedules", "Unemployed part- time", "Not in labor force", "Unemployed full-time"});
@@ -21,6 +21,9 @@ CleanedDataset::CleanedDataset() {
     this->dataset.resize(14643, classes.size());
     this->labels.resize(14643);
     this->LoadFile("dataset/cleaned-dataset.txt", classes);
+
+    //change names to create plots
+    this->attributes[5].addValues({"White", "Black", "Other", "Indian", "Asian"});
 }
 
 void CleanedDataset::LoadFile(const char *path, vector<Attribute>& classes) {

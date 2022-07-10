@@ -12,11 +12,11 @@
 
 /////////// CONFIG
 
-#define NUM_THREADS_KFOLD 8
+#define NUM_THREADS_KFOLD 1
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test (i.e. "sex" or "race")*/
-const string attribute = "race";
+const string attribute = "sex";
 
 /** Display name for the prediction values */
 const string label_name = "wage";
@@ -101,7 +101,7 @@ int main() {
     double time = (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count())/1000.0;
     cout << endl << "Execution time: " << time << endl;
     cout << "Number of machine threads: " << std::thread::hardware_concurrency() << endl;
-    cout << "Number of threads per Kfold: " << NUM_THREADS_KFOLD << endl;
+    cout << "Number of threads: " << NUM_THREADS_KFOLD << endl;
     cout << "Attribute: " << attribute << endl;
     string model = modelML_type ? "Polynomial Regression" : "Linear Regression";
     cout << "Model: " << model << endl;

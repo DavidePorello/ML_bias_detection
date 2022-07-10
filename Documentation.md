@@ -23,13 +23,13 @@ Given the starting dataset D[[2]](#references), the paper illustrates the follow
 To improve the performance of this operations, we decided to use parallelization, in the form of a thread pool, to compute concurrently the predictions of the machine learning model.
 ![Design_diagram](Design_diagram.png)
 
-To help in the handling of the linear algebra computations, we used the library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), and to produce the output plots we used [Sciplot](https://sciplot.github.io/) 
+To help in the handling of the linear algebra computations we used the library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), and to produce the output plots we used [Sciplot](https://sciplot.github.io/).
 
 ### Preprocessing
-The preprocessing is highly inspired by the paper, as we have reduced the dataset (files `dataset/censun-income.data` and `census-income.test`) from 300000 to 15000 records approximately.
+The preprocessing is highly inspired by the paper, as we have reduced the dataset (files `dataset/censun-income.data` and `dataset/census-income.test`) from 300000 to 15000 records approximately.
 We have selected a set of 10 attributes that, for us, are strictly related to the "wage" (that is the label).
-We have filtered each categorial attributes (all of our attributes are categorial except the age) specifying part of the possible categorial values (see file `dataset/censun-income.names`).
-The class `ClearedDataset` loads the dataset in an Eigen::MatrixXf and the labels in an Eigen::vectorXf taking the values from the file `dataset/cleaned-dataset.txt`, if the file is not present yes it creates the file using the class `Dataset`.
+We have filtered each categorial attribute (all of our attributes are categorial except the age) specifying part of the possible categorial values (see file `dataset/attributes.txt` for our choices and  `dataset/censun-income.names` for the list of all possible values).
+The class `ClearedDataset` loads the dataset in an Eigen::MatrixXf and the labels in an Eigen::vectorXf taking the values from the file `dataset/cleaned-dataset.txt`, if the file is not present yet it creates the file using the class `Dataset`.
 Attributes in `ClearedDataset`: age, education, marital stat, major industry code, major occupation code, race, sex, member of a labor union, full or part time employment stat and citizenship.
 
 However, since the paper does not includes enough details on this step, our preprocessed dataset is different, and as such we also expect our findings to be different.
