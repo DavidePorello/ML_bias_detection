@@ -21,7 +21,7 @@ Given the starting dataset D[[2]](#references), the paper illustrates the follow
 5. Predict the alternative predicted label f(Dϕ) → ˆyϕ.
 
 To improve the performance of this operations, we decided to use parallelization, in the form of a thread pool, to compute concurrently the predictions of the machine learning model.
-![Design_diagram](Design_diagram.png)
+![Design_diagram](results/Design_diagram.png)
 
 To help in the handling of the linear algebra computations we used the library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), and to produce the output plots we used [Sciplot](https://sciplot.github.io/).
 
