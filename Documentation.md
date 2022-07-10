@@ -37,10 +37,10 @@ However, since the paper does not includes enough details on this step, our prep
 ### K-fold and parallelization
 As indicated in the paper, the model predictions must be evaluated using K-fold, with K=10. Additionally, this process must be repeated multiple times, on the original dataset and the alternated one(s).
 Computing the model predictions is the most expensive task of the project, therefore we decided to parallelize it.
-The simplest approach is to create a thread for each dataset, and then create K threads for each fold. In each of these threads, the train and test sets are identified, the alternation function is computed on the test set (if needed), then the threads returns the mean and variance of the predictions inside a future.
+The simplest approach is to create a thread for each dataset, and then create K threads for each of the K folds. In each of these threads, the train and test sets are identified, the alternation function is computed on the test set (if needed), then the threads returns the mean and variance of the predictions inside a future.
 To compute the KL and draw the graph we don't need to return the entire prediction vector.
 
-Instead, we decided to create more refined solution, using a thread pool of N worker threads.
+Instead, we decided to create a more refined solution, using a thread pool of N worker threads.
 For each fold of each dataset, a new task is created and enqueued in the thread pool. This decreases the memory requirements of the program, especially when detecting the bias of a PBA with many categories, and it allows for a better control of the parallelization.
 If only 1 thread is created in the thread pool, the program is essentially sequential (plus a small overhead due the thread management), which allows us to measure the performance benefits of the parallelization.
 
@@ -68,33 +68,33 @@ The alternation function is a simple function that switches two categories of an
 It is calculated in the thread function, so different datasets are alternated in parallel.
 ### KL divergence computation
 The KL divergence is computed using the same formula as in the paper. The KL divergence computation is not an expensive task (cost O(N), where N is the number of samples in the evaluation set). 
-However, most of this cost comes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (threfore taking advantege of the parallelization), and in the post process section at the end the code just computes the final formula, which requires less than a millisecond of time.
+However, most of this cost comes from the calculation of the mean and variance of the evaluated sets. In our design we computed these metrics directly inside the thread pool (therefore taking advantege of the parallelization), and in the post process section at the end the code just computes the final formula, which requires less than a millisecond of time.
 Therefore there is no need to consider additional measures to speed up this functionality.
 ## Experimental results
 We have measured the performance of the program (excluding the dataset loading and the plots creation) using a different number of threads in the thread pool. The measurements have been collected with both the linear and polynomial regression and the attributes 'sex' and 'race' as PBA.
 
-![Linear_regression_sex](performance/LR_sex.png)
-![Linear_regression_race](performance/LR_race.png)
-![Polynomial_regression_sex](performance/PR_sex.png)
-![Polynomial_regression_race](performance/PR_race.png)
+![Linear_regression_sex](results/LR_sex.png)
+![Linear_regression_race](results/LR_race.png)
+![Polynomial_regression_sex](results/PR_sex.png)
+![Polynomial_regression_race](results/PR_race.png)
 
-The program produces the following output plots. Here are reported only a few of the plots relative to the "race" attribute. All plots can be found in the `plots` folder after the code is executed
+The program produces the following output plots. Here are reported only a few of the plots relative to the polynomial regression. All plots can be found in the `plots` folder after the code is executed.
 
-![Alternation_female_male](performance/alternation_Female_Male.jpg)
-![Alternation_male_female](performance/alternation_Male_Female.jpg)
-![Bias_male_female](performance/bias_evaluation_Female_Male.jpg)
-![Alternation_black_white](performance/alternation_Black_White_page-0001.jpg)
-![Alternation_white_black](performance/alternation_White_Black_page-0001.jpg)
-![Bias_black_white](performance/bias_evaluation_White_Black_page-0001.jpg)
+![Alternation_female_male](results/alternation_Female_Male.jpg)
+![Alternation_male_female](results/alternation_Male_Female.jpg)
+![Bias_male_female](results/bias_evaluation_Female_Male.jpg)
+![Alternation_black_white](results/alternation_Black_White.png)
+![Alternation_white_black](results/alternation_White_Black.png)
+![Bias_black_white](results/bias_evaluation_Black_White.png)
 ## Conclusion
 After the development of the code, we can make some considerations:
-- The paper states that the alternation function is computed on the dataset D. This is not precise, as with this approach the code would not produce appreciable results (it would just invert the category name in the dataset). Instead, the alternation function must be computed at each iteration on the test fold only
+- The paper states that the alternation function is computed on the dataset D. This is not precise, as with this approach the code would not produce appreciable results (it would just invert the category name in the dataset). Instead, the alternation function must be computed at each iteration on the test fold only.
 - As seen in the alternation plots, our model predicts wages that are considerably different with respect to the paper's findings. Upon closer inspection, our results seem to be correct, as the average wage in our dataset is about 1800.
   A partial explanation for this behavious is that the difference might be caused by a different preprocessing of the original dataset.
-  However, the same bias trends that are described in the paper can also be seen in our results
-- Our alternation plots are much closer together (there have an average delta of about 100), therefore the bias evaluation plots are not as neatly separated as in the paper, especially when using the Polynomial Regression on the "race" attribute.
+  However, the same bias trends that are described in the paper can also be seen in our results.
+- Our alternation plots are much closer together (there have an average delta of about 100), therefore the bias evaluation plots are not as neatly separated as in the paper, especially when using the polynomial regression on the "race" attribute.
 - As expected, the linear regression model is considerably faster than the polynomial regression model. Additionally, the former generates comparably worse bias evaluation plots. 
-  More in general, regression is not well suited for this application (the dataset contains mostly categorical attributes), but the actual predition precision is not in the scope of this project
+  More in general, regression is not well suited for this application (the dataset contains mostly categorical attributes), but the actual predition precision is not in the scope of this project.
 - The performance plots confirm the espected behaviour: running the code with a single thread gives the worst performance (the code is similar to a sequential one), and increasing the number of threads improves the performance.
   These benchmarks were collected on a machine with 4 hardware threads, and as expected, we see that after N=4 the performance does not improve as much. On the contrary, incrementing N further increases the thread management overhead, which contributes to a small increase in the processing time.
   To conclude, the most efficient way to run this code is to run it with a number of threads equal (or slightly superior) to the number of hardware threads of the machine.

@@ -12,7 +12,7 @@
 
 /////////// CONFIG
 
-#define NUM_THREADS_KFOLD 5
+#define NUM_THREADS_KFOLD 8
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test (i.e. "sex" or "race")*/

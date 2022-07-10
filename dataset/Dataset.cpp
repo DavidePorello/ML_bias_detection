@@ -18,7 +18,7 @@ vector<RawDataRecord> Dataset::LoadFile(const char *path) {
     string line;
     file.open(path, ios::in);
     if(!file.is_open()) {
-        cout << "Could not open file " << path << endl;
+        cout << "Could not open file " << path << endl << "Check permissions and check the working directory!" << endl;
         exit(-1);
     }
     while(getline(file, line)) {

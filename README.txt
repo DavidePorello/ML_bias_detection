@@ -24,7 +24,7 @@ In order to build and use this project is necessary to download and install it.
     4. Open the command prompt with admin privileges, and navigate to such directory with cd C:/eigen/build
     5. Run cmake ..
     6. Run cmake --build . --target install
-      If it fails due to missing authorization, try to close and re-open the command prompt with admin privileges
+       If it fails due to missing authorization, try to close and re-open the command prompt with admin privileges.
 
 - Linux
   Requires CMake (sudo apt install cmake)
