@@ -12,7 +12,7 @@
 
 /////////// CONFIG
 
-#define NUM_THREADS_KFOLD 1
+#define NUM_THREADS_KFOLD 5
 #define NUM_FOLDS 10
 
 /** Indicate which PBA attribute to test (i.e. "sex" or "race")*/
@@ -25,7 +25,7 @@ const string label_name = "wage";
  * @var 0: use Linear Regression
  * @var 1: use Polynomial Regression
  * */
-int modelML_type = 0;
+int modelML_type = 1;
 ////////////////////////
 
 using namespace std;
